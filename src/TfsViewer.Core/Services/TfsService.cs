@@ -172,7 +172,7 @@ public class TfsService : ITfsService, IDisposable
             { 
                 "System.Id", "System.Title", "System.WorkItemType", "System.State",
                 "System.AssignedTo", "System.CreatedDate", "System.ChangedDate",
-                "System.Priority", "System.AreaPath", "System.IterationPath"
+                //"System.Priority", "System.AreaPath", "System.IterationPath"
             };
 
             var tfsWorkItems = await witClient.GetWorkItemsAsync(ids, fields, cancellationToken: cancellationToken);

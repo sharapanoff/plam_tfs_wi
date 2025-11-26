@@ -1,6 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+	<Resource Remove="Resources\Styles.xaml" />
+    <Resource Include="Resources\Styles.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TfsViewer.Core\TfsViewer.Core.csproj" />
   </ItemGroup>
 
