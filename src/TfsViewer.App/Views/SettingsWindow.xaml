@@ -1,0 +1,79 @@
+<Window x:Class="TfsViewer.App.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="TFS Connection Settings" 
+        Height="350" 
+        Width="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Style="{StaticResource MaterialDesignWindow}">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" 
+                   Text="TFS Server Connection" 
+                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                   Margin="0,0,0,20"/>
+
+        <TextBox Grid.Row="1"
+                 materialDesign:HintAssist.Hint="Server URL (e.g., https://tfs.company.com/tfs/DefaultCollection)"
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                 Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="0,0,0,15"/>
+
+        <CheckBox Grid.Row="2"
+                  Content="Use Windows Authentication (Recommended)"
+                  IsChecked="{Binding UseWindowsAuthentication}"
+                  Margin="0,0,0,15"/>
+
+        <StackPanel Grid.Row="3" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,15">
+            
+            <Button Content="Test Connection"
+                    Command="{Binding TestConnectionCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0,0,10,0"/>
+
+            <TextBlock Text="{Binding ConnectionStatus}"
+                       VerticalAlignment="Center"
+                       Foreground="{Binding ConnectionStatusColor}"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="4"
+                   Text="{Binding ErrorMessage}"
+                   Foreground="Red"
+                   TextWrapping="Wrap"
+                   Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibilityConverter}}"
+                   Margin="0,10,0,0"/>
+
+        <StackPanel Grid.Row="5" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right">
+            
+            <Button Content="Connect"
+                    Command="{Binding ConnectCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    IsDefault="True"
+                    Margin="0,0,10,0"/>
+
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

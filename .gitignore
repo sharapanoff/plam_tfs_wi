@@ -1,0 +1,123 @@
+# .NET / C# / WPF Project .gitignore
+
+## Build results
+bin/
+obj/
+out/
+build/
+dist/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+## Visual Studio cache/options
+.vs/
+.vscode/
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## User-specific files
+*.userprefs
+*.suo
+*.user
+*.sln.docstates
+
+## Build Results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+## ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## StyleCop
+StyleCopReport.xml
+
+## NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+## Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+## Logs and databases
+*.log
+*.sql
+*.sqlite
+*.db
+
+## OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+## Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+## Environment files
+.env
+.env.local
+.env.*.local
+*.secret
+
+## Local application data
+%LOCALAPPDATA%/
+
+## WPF specific
+*.g.cs
+*.g.i.cs
+*.baml
+GeneratedInternalTypeHelper.cs
