@@ -9,6 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="19.250.0-preview" />
     <PackageReference Include="Microsoft.VisualStudio.Services.Client" Version="19.250.0-preview" />
+    <PackageReference Include="Polly" Version="8.6.5" />
+    <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
     <PackageReference Include="System.Runtime.Caching" Version="10.0.0" />
   </ItemGroup>

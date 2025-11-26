@@ -113,6 +113,11 @@ As a developer, I want to refresh the displayed data from TFS so that I always s
 - **FR-024**: System MUST display a loading indicator or progress bar during data retrieval operations
 - **FR-025**: System MUST keep the UI responsive during data loading operations
 - **FR-026**: System MUST provide a cancel option for ongoing data retrieval operations
+- **FR-027**: System MUST display last refresh timestamp to indicate data freshness
+- **FR-028**: System MUST retry failed data retrieval operations 3 times with exponential backoff before displaying error message
+- **FR-029**: System MUST detect Visual Studio 2022 installation for "Open in Visual Studio" functionality
+- **FR-030**: System MUST log errors and warnings to a local file for troubleshooting purposes
+- **FR-031**: System MUST allow multiple application instances to run independently without coordination or shared state
 
 ### Key Entities *(include if feature involves data)*
 
@@ -145,7 +150,7 @@ As a developer, I want to refresh the displayed data from TFS so that I always s
 - Users have valid TFS server credentials and permissions to access their assigned items
 - Users have network access to the TFS server
 - TFS server uses standard TFS/Azure DevOps Server APIs
-- Visual Studio is installed on the user's machine for "Open in Visual Studio" functionality to work
+- Visual Studio 2022 is installed on the user's machine for "Open in Visual Studio" functionality to work
 - Users work primarily in a Windows environment where Visual Studio integration is standard
 - TFS server version is 2015 or later (supports modern REST APIs)
 - Application uses Windows Authentication with current user's credentials (no separate credential storage required)
@@ -155,6 +160,14 @@ As a developer, I want to refresh the displayed data from TFS so that I always s
 - Network latency to TFS server is within typical corporate network ranges (< 100ms)
 
 ## Clarifications
+
+### Session 2025-11-26
+
+- Q: How should the application indicate data freshness to users (especially if auto-refresh fails)? → A: Show "Last refreshed" timestamp only, no staleness indicator
+- Q: What should happen if network connection drops mid-refresh? → A: Retry 3 times with exponential backoff, then show error
+- Q: Which Visual Studio versions should the application detect and support? → A: Support VS 2022 only (latest version)
+- Q: When errors occur (network failures, TFS API errors, VS detection failures), how should the application handle diagnostic logging? → A: Basic logging to file (errors and warnings only) for troubleshooting
+- Q: If the user launches multiple instances of the application simultaneously, how should the application handle this scenario? → A: Allow multiple instances - each runs independently without coordination
 
 ### Session 2025-11-25
 

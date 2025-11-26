@@ -1,194 +1,96 @@
 # Implementation Plan: TFS Read-Only Viewer Application
 
-**Branch**: `001-tfs-viewer` | **Date**: 2025-11-25 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-tfs-viewer` | **Date**: 2025-11-26 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/001-tfs-viewer/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-A Windows desktop application built with WPF that provides read-only access to TFS work items, pull requests, and code reviews assigned to the current user. The application uses Windows Authentication, displays items in a responsive UI with automatic 5-minute refresh, and allows opening items in browser or Visual Studio. Primary goal: centralize view of assigned TFS items without opening multiple tools.
+Build a Windows desktop application that displays TFS work items, pull requests, and code reviews assigned to the current user. The application is strictly read-only, using WPF for the UI, Windows Authentication for TFS access, and Visual Studio 2022 integration for opening items. Key features include 5-minute auto-refresh, manual refresh with retry logic (3x exponential backoff), basic file-based error/warning logging, and support for up to 500 items without performance degradation.
 
 ## Technical Context
 
-**Language/Version**: C# / .NET 6.0 or later  
-**Primary Dependencies**: Microsoft.TeamFoundationServer.Client, Microsoft.VisualStudio.Services.Client, System.Windows (WPF)  
-**Storage**: Local application settings for TFS server URL (user preferences); no database required  
-**Testing**: xUnit for unit tests, WPF UI automation for integration tests  
-**Target Platform**: Windows 10/11 desktop (x64)
-**Project Type**: Single desktop application (WPF)  
-**Performance Goals**: <5s initial load, <10s refresh, UI responsive during all operations  
-**Constraints**: Read-only (no TFS modifications), Windows Authentication only, <200MB memory footprint  
-**Scale/Scope**: Support up to 500 assigned items per user, single main window with tab navigation
+**Language/Version**: C# / .NET 10.0  
+**Primary Dependencies**: WPF, MaterialDesignThemes 5.1.0, CommunityToolkit.Mvvm 8.3.2, Microsoft.TeamFoundationServer.Client 19.250.0-preview, Microsoft.VisualStudio.Services.Client 19.250.0-preview  
+**Storage**: System.Runtime.Caching (in-memory cache for TFS data), local file for logging  
+**Testing**: MSTest or xUnit (unit tests), manual acceptance testing per user story scenarios  
+**Target Platform**: Windows 10+ desktop (net10.0-windows)  
+**Project Type**: Desktop application (WPF single executable with supporting class library)  
+**Performance Goals**: Load 500 items within 5 seconds, UI responsive during all operations, auto-refresh every 5 minutes  
+**Constraints**: Read-only (no TFS modifications), 3x retry with exponential backoff on network failures, <5s initial load, <10s manual refresh  
+**Scale/Scope**: Up to 500 work items/PRs/code reviews per user, single TFS collection connection, VS 2022 integration only
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-### I. Clarity First ✅ PASS
-- Feature spec includes clear functional requirements (FR-001 through FR-026)
-- All requirements written in plain language
-- Acceptance criteria are testable and measurable (SC-001 through SC-014)
-- All ambiguities resolved through clarification session (6 Q&A pairs documented)
+**Initial Check (Pre-Phase 0)**:
 
-### II. Build What's Needed ✅ PASS
-- Scope limited to read-only viewing (FR-017)
-- No unnecessary features beyond specification
-- Simple desktop application using standard WPF framework
-- No complex architecture patterns introduced without justification
-- Authentication uses existing Windows credentials (no custom auth system)
+| Principle | Status | Verification |
+|-----------|--------|--------------|
+| **I. Clarity First** | ✅ PASS | Spec contains 4 user stories with Given/When/Then acceptance scenarios, 31 functional requirements (FR-001 to FR-031), 14 measurable success criteria, 11 assumptions, and 2 clarification sessions (11 Q&A pairs total). All requirements testable and written in plain language. |
+| **II. Build What's Needed** | ✅ PASS | Scope limited to read-only viewing of 3 TFS item types (work items, PRs, code reviews) with browser/VS opening actions. No creation, editing, or deletion features. Simple auto-refresh (5 min) and manual refresh. Basic file logging only. VS 2022 only (not multi-version). No unnecessary abstractions specified. |
+| **III. Track Progress** | ✅ PASS | Existing tasks.md has 146 tasks with dependencies marked, 88 tasks (60%) already completed with checkpoints validated. Remaining work organized in phases (Phase 5 PRs, Phase 6 Code Reviews, Phase 8 Performance, Phase 9 Polish). |
 
-### III. Track Progress ✅ PASS
-- User stories prioritized (P1, P2, P3)
-- Each story independently testable
-- Success criteria provide clear validation checkpoints
-- Implementation will be broken into phases (0: Research, 1: Design, 2: Tasks)
+**Post-Phase 1 Re-Check**:
 
-**Overall Assessment**: ✅ ALL GATES PASSED - Proceed to Phase 0
+| Principle | Status | Verification |
+|-----------|--------|--------------|
+| **I. Clarity First** | ✅ PASS | Research.md documents all technology choices with alternatives considered and rationales. Data-model.md defines 6 entities with properties, validation rules, invariants, and lifecycle. API contracts specify TFS endpoints and Visual Studio integration patterns. No ambiguities remain. |
+| **II. Build What's Needed** | ✅ PASS | Technology stack remains minimal: WPF (UI), TFS Client SDK (API access), MemoryCache (caching), Serilog (logging), Polly (retry). No over-engineering detected. Two-project structure (App + Core) justified for testability without unnecessary layers. |
+| **III. Track Progress** | ✅ PASS | Phase 0 (research.md) and Phase 1 (data-model.md, contracts/, quickstart.md) artifacts complete. Agent context updated. Ready for Phase 2 (tasks.md generation via /speckit.tasks). |
+
+**Overall Gate Status**: ✅ PASS - Proceed to Phase 2 (Task Breakdown)
+
+**Justification for Complexity**: None required - project adheres to all constitution principles without violations.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
+specs/001-tfs-viewer/
 ├── plan.md              # This file (/speckit.plan command output)
 ├── research.md          # Phase 0 output (/speckit.plan command)
 ├── data-model.md        # Phase 1 output (/speckit.plan command)
 ├── quickstart.md        # Phase 1 output (/speckit.plan command)
 ├── contracts/           # Phase 1 output (/speckit.plan command)
-└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
+│   └── api-contracts.md # TFS API endpoints and Visual Studio integration contracts
+├── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
+├── spec.md              # Source specification (already exists)
+└── checklists/
+    └── requirements.md  # Pre-planning validation checklist
 ```
 
 ### Source Code (repository root)
 
 ```text
-src/
-├── TfsViewer/                    # Main WPF application project
-│   ├── App.xaml                  # Application entry point
-│   ├── App.xaml.cs
-│   ├── MainWindow.xaml           # Main application window
-│   ├── MainWindow.xaml.cs
-│   ├── Models/                   # Data models
-│   │   ├── WorkItem.cs
-│   │   ├── PullRequest.cs
-│   │   ├── CodeReview.cs
-│   │   └── TfsConnection.cs
-│   ├── Services/                 # Business logic and TFS integration
-│   │   ├── ITfsService.cs
-│   │   ├── TfsService.cs
-│   │   ├── IVisualStudioDetector.cs
-│   │   └── VisualStudioDetector.cs
-│   ├── ViewModels/               # MVVM view models
-│   │   ├── MainViewModel.cs
-│   │   ├── WorkItemsViewModel.cs
-│   │   ├── PullRequestsViewModel.cs
-│   │   └── CodeReviewsViewModel.cs
-│   ├── Views/                    # User controls for each section
-│   │   ├── WorkItemsView.xaml
-│   │   ├── PullRequestsView.xaml
-│   │   └── CodeReviewsView.xaml
-│   ├── Converters/               # XAML value converters
-│   ├── Helpers/                  # Utility classes
-│   │   ├── RelayCommand.cs
-│   │   └── NotifyPropertyChanged.cs
-│   └── Resources/                # Styles, templates, images
-│       └── Styles.xaml
+TfsViewer.sln            # Visual Studio solution file
 
-tests/
-├── TfsViewer.Tests/              # Unit tests
-│   ├── Services/
-│   │   ├── TfsServiceTests.cs
-│   │   └── VisualStudioDetectorTests.cs
-│   └── ViewModels/
-│       ├── MainViewModelTests.cs
-│       └── WorkItemsViewModelTests.cs
-└── TfsViewer.IntegrationTests/   # Integration tests
-    └── TfsConnectionTests.cs
+src/TfsViewer.App/       # WPF application project (net10.0-windows)
+├── App.xaml             # Application entry point and resources
+├── App.xaml.cs
+├── Views/               # XAML views (MainWindow, WorkItemsView, PullRequestsView, CodeReviewsView)
+├── ViewModels/          # View models with MVVM pattern (CommunityToolkit.Mvvm)
+├── Converters/          # XAML value converters
+└── Resources/           # Styles, templates, images
 
-TfsViewer.sln                     # Solution file
+src/TfsViewer.Core/      # Class library project (net10.0)
+├── Models/              # Domain entities (WorkItem, PullRequest, CodeReview, TfsConnection)
+├── Services/            # Business logic (TfsDataService, CacheService, VisualStudioService, LoggingService)
+├── Infrastructure/      # Cross-cutting (TfsClientFactory, RetryPolicy)
+└── Configuration/       # App settings and configuration
+
+tests/                   # Test projects (to be created in Phase 8)
+├── TfsViewer.Tests/     # Unit tests
+└── TfsViewer.IntegrationTests/  # Integration tests with TFS
 ```
 
-**Structure Decision**: Single WPF desktop application using MVVM pattern. This is a straightforward Windows desktop app with no backend/frontend split needed. The MVVM pattern is standard for WPF applications and provides good separation of concerns for testability while remaining simple.
+**Structure Decision**: Desktop application structure chosen based on WPF requirement from spec (FR-017, Assumptions section). Two-project approach separates UI concerns (TfsViewer.App) from business logic (TfsViewer.Core), enabling testability and potential future reuse of core logic. This aligns with standard WPF MVVM architecture patterns.
 
 ## Complexity Tracking
 
-No constitution violations detected. All complexity is justified by requirements:
-- WPF framework: Specified in requirements for modern Windows desktop UI
-- MVVM pattern: Standard WPF best practice for separation of concerns and testability
-- TFS SDK dependencies: Required to communicate with TFS server
-- No unnecessary abstractions or patterns introduced
+> **Fill ONLY if Constitution Check has violations that must be justified**
 
----
-
-## Post-Design Constitution Check
-
-*Re-evaluation after Phase 1 (Design & Contracts)*
-
-### I. Clarity First ✅ PASS
-- Data model defined with 4 core entities (WorkItem, PullRequest, CodeReview, TfsConnection)
-- All entity properties documented with types, validation rules, and constraints
-- API contracts defined with clear service interfaces (ITfsService, ICacheService, IDialogService, IVisualStudioDetector)
-- Quickstart guide provides clear developer onboarding path
-- No ambiguous design decisions remaining
-
-### II. Build What's Needed ✅ PASS
-- Design stays within specification boundaries
-- 4 entities, 4 service interfaces - minimal necessary complexity
-- No repository pattern, no complex domain logic - appropriate for read-only CRUD
-- MVVM with CommunityToolkit.Mvvm uses source generators to reduce boilerplate
-- Cache strategy is simple (MemoryCache with 5-min TTL)
-- No over-engineering detected
-
-### III. Track Progress ✅ PASS
-- Phase 0 complete: Research documented with all technical decisions
-- Phase 1 complete: Data model, API contracts, quickstart guide created
-- Phase 2 ready: Task breakdown will follow this plan
-- All artifacts versioned and documented
-- Clear dependency graph (Models → Services → ViewModels → Views)
-
-**Overall Assessment**: ✅ ALL GATES PASSED - Design adheres to constitution principles
-
-**Recommendation**: Proceed to Phase 2 - Task breakdown using `/speckit.tasks` command
-
----
-
-## Deliverables Summary
-
-### Phase 0: Research ✅ COMPLETE
-- **File**: `research.md`
-- **Content**: TFS SDK selection, Windows Auth patterns, API query strategies, VS integration, performance optimization, WPF/MVVM framework decisions, async loading patterns, timer implementation, error handling, Visual Studio detection
-- **Status**: All technical unknowns resolved
-
-### Phase 1: Design & Contracts ✅ COMPLETE
-- **File**: `data-model.md`
-    - 4 core entities defined
-    - Validation rules documented
-    - Cache strategy specified
-- **File**: `contracts/api-contracts.md`
-    - ITfsService (TFS data retrieval)
-    - ICacheService (data caching)
-    - IDialogService (error handling)
-    - IVisualStudioDetector (VS detection)
-- **File**: `quickstart.md`
-    - Developer setup guide
-    - Project structure overview
-    - Common tasks and workflows
-- **File**: `.github/agents/copilot-instructions.md`
-    - Updated with technology stack
-    - C# / .NET 6.0, WPF, TFS SDK documented
-
-### Phase 2: Tasks (Next Step)
-- **Command**: Run `/speckit.tasks` to generate task breakdown
-- **Expected Output**: `tasks.md` with prioritized, independent tasks
-- **Task Categories**: Project setup, Models, Services, ViewModels, Views, Testing, Documentation
-
----
-
-## Next Actions
-
-1. ✅ Phase 0 Research complete
-2. ✅ Phase 1 Design & Contracts complete
-3. ✅ Agent context updated
-4. ✅ Post-design constitution check passed
-5. ⏭️ **Next**: Run `/speckit.tasks` to generate implementation tasks
+**No violations identified** - All constitution principles satisfied without requiring complexity justification.

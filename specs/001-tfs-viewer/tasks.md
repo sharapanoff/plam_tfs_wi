@@ -73,6 +73,9 @@ Based on plan.md structure:
 - [X] T036 [P] Create application icons in src/TfsViewer.App/Resources/Icons/
 - [X] T037 Configure logging infrastructure using ILogger in src/TfsViewer.Core/
 - [X] T038 Create TfsServiceException class in src/TfsViewer.Core/Exceptions/TfsServiceException.cs
+- [X] T038a [P] Install Polly NuGet package (8.x) in TfsViewer.Core for retry policy
+- [X] T038b [P] Install Serilog NuGet package (3.x) in TfsViewer.Core for structured logging
+- [X] T038c [P] Install Serilog.Sinks.File NuGet package in TfsViewer.Core for file logging
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -119,6 +122,10 @@ Based on plan.md structure:
 - [X] T069 [US1] Implement credential loading on app startup in App.xaml.cs
 - [X] T070 [US1] Show SettingsWindow if no credentials found on startup
 
+- [X] T070a [US1] Create LoggingService in src/TfsViewer.Core/Services/LoggingService.cs with Serilog configuration (FR-030)
+- [X] T070b [US1] Configure Serilog to write errors/warnings only to %LOCALAPPDATA%\TfsViewer\logs\app-.log with rolling daily files (FR-030)
+- [X] T070c [US1] Integrate LoggingService into TfsService error handling for API failures (FR-030)
+
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can connect to TFS, view assigned work items, and open them in browser/VS
 
 ---
@@ -141,7 +148,9 @@ Based on plan.md structure:
 - [X] T078 [US4] Show user-friendly error message dialog when refresh fails
 - [X] T079 [US4] Add last refresh timestamp display to MainWindow.xaml status bar
 - [X] T080 [US4] Update last refresh timestamp after successful refresh operation
-- [ ] T081 [US4] Add retry logic with exponential backoff in TfsService for transient failures
+ - [X] T081 [US4] Create Polly retry policy in src/TfsViewer.Core/Infrastructure/RetryPolicy.cs with 3 retries and exponential backoff (FR-028)
+ - [X] T081a [US4] Apply Polly retry policy to TfsService.GetAssignedWorkItemsAsync with VssServiceException and HttpRequestException handling (FR-028)
+ - [X] T081b [US4] Log retry attempts with LoggingService including attempt number and delay duration (FR-028, FR-030)
 - [ ] T082 [US4] Implement timeout handling (30 seconds) for TFS API calls
 
 **Checkpoint**: At this point, User Stories 1 AND 4 should both work - users can view work items and refresh them on demand
@@ -156,23 +165,23 @@ Based on plan.md structure:
 
 ### Implementation for User Story 2
 
-- [ ] T083 [P] [US2] Create PullRequestViewModel in src/TfsViewer.App/ViewModels/PullRequestViewModel.cs
-- [ ] T084 [P] [US2] Create PullRequestTabViewModel in src/TfsViewer.App/ViewModels/PullRequestTabViewModel.cs
-- [ ] T085 [US2] Implement GetPullRequestsAsync method in TfsService using Git Pull Requests API
-- [ ] T086 [US2] Implement LoadPullRequestsAsync command in PullRequestTabViewModel
-- [ ] T087 [US2] Implement cache integration for pull requests with 2-minute TTL in TfsService
-- [ ] T088 [US2] Implement OpenPullRequestInVisualStudio method in LauncherService
-- [ ] T089 [US2] Add Pull Requests tab to MainWindow.xaml with DataGrid
-- [ ] T090 [US2] Create DataTemplate for PullRequest display (ID, Title, Author, Date, Status)
-- [ ] T091 [US2] Add "Open in Browser" button to PullRequest row template
-- [ ] T092 [US2] Add "Open in Visual Studio" button to PullRequest row template
-- [ ] T093 [US2] Add pull request count badge to tab header with binding
-- [ ] T094 [US2] Add PullRequestTabViewModel to MainViewModel composition
-- [ ] T095 [US2] Integrate pull requests refresh into MainViewModel.RefreshAllCommand
-- [ ] T096 [US2] Add loading indicator to Pull Requests tab during data fetch
-- [ ] T097 [US2] Add empty state message when no pull requests assigned
-- [ ] T098 [US2] Implement error handling for pull requests API failures
-- [ ] T099 [US2] Register PullRequestTabViewModel in dependency injection
+ - [X] T083 [P] [US2] Create PullRequestViewModel in src/TfsViewer.App/ViewModels/PullRequestViewModel.cs
+ - [X] T084 [P] [US2] Create PullRequestTabViewModel in src/TfsViewer.App/ViewModels/PullRequestTabViewModel.cs
+ - [X] T085 [US2] Implement GetPullRequestsAsync method in TfsService using Git Pull Requests API
+ - [X] T086 [US2] Implement LoadPullRequestsAsync command in PullRequestTabViewModel
+ - [ ] T087 [US2] Implement cache integration for pull requests with 2-minute TTL in TfsService
+ - [X] T088 [US2] Implement OpenPullRequestInVisualStudio method in LauncherService
+ - [X] T089 [US2] Add Pull Requests tab to MainWindow.xaml with DataGrid
+ - [X] T090 [US2] Create DataTemplate for PullRequest display (ID, Title, Author, Date, Status)
+ - [X] T091 [US2] Add "Open in Browser" button to PullRequest row template
+ - [X] T092 [US2] Add "Open in Visual Studio" button to PullRequest row template
+ - [X] T093 [US2] Add pull request count badge to tab header with binding
+ - [X] T094 [US2] Add PullRequestTabViewModel to MainViewModel composition
+ - [X] T095 [US2] Integrate pull requests refresh into MainViewModel.RefreshAllCommand
+ - [X] T096 [US2] Add loading indicator to Pull Requests tab during data fetch
+ - [X] T097 [US2] Add empty state message when no pull requests assigned
+ - [X] T098 [US2] Implement error handling for pull requests API failures
+ - [X] T099 [US2] Register PullRequestTabViewModel in dependency injection
 
 **Checkpoint**: At this point, User Stories 1, 2, and 4 should all work independently - users can view work items and pull requests, and refresh both
 
@@ -186,23 +195,23 @@ Based on plan.md structure:
 
 ### Implementation for User Story 3
 
-- [ ] T100 [P] [US3] Create CodeReviewViewModel in src/TfsViewer.App/ViewModels/CodeReviewViewModel.cs
-- [ ] T101 [P] [US3] Create CodeReviewTabViewModel in src/TfsViewer.App/ViewModels/CodeReviewTabViewModel.cs
-- [ ] T102 [US3] Implement GetCodeReviewsAsync method in TfsService using TFVC Code Reviews API
-- [ ] T103 [US3] Implement LoadCodeReviewsAsync command in CodeReviewTabViewModel
-- [ ] T104 [US3] Implement cache integration for code reviews with 5-minute TTL in TfsService
-- [ ] T105 [US3] Implement OpenCodeReviewInVisualStudio method in LauncherService
-- [ ] T106 [US3] Add Code Reviews tab to MainWindow.xaml with DataGrid
-- [ ] T107 [US3] Create DataTemplate for CodeReview display (ID, Title, Requester, Date, Status)
-- [ ] T108 [US3] Add "Open in Browser" button to CodeReview row template
-- [ ] T109 [US3] Add "Open in Visual Studio" button to CodeReview row template
-- [ ] T110 [US3] Add code review count badge to tab header with binding
-- [ ] T111 [US3] Add CodeReviewTabViewModel to MainViewModel composition
-- [ ] T112 [US3] Integrate code reviews refresh into MainViewModel.RefreshAllCommand
-- [ ] T113 [US3] Add loading indicator to Code Reviews tab during data fetch
-- [ ] T114 [US3] Add empty state message when no code reviews assigned
-- [ ] T115 [US3] Implement error handling for code reviews API failures
-- [ ] T116 [US3] Register CodeReviewTabViewModel in dependency injection
+ - [X] T100 [P] [US3] Create CodeReviewViewModel in src/TfsViewer.App/ViewModels/CodeReviewViewModel.cs
+ - [X] T101 [P] [US3] Create CodeReviewTabViewModel in src/TfsViewer.App/ViewModels/CodeReviewTabViewModel.cs
+ - [X] T102 [US3] Implement GetCodeReviewsAsync method in TfsService using TFVC Code Reviews API
+ - [X] T103 [US3] Implement LoadCodeReviewsAsync command in CodeReviewTabViewModel
+ - [ ] T104 [US3] Implement cache integration for code reviews with 5-minute TTL in TfsService
+ - [X] T105 [US3] Implement OpenCodeReviewInVisualStudio method in LauncherService
+ - [X] T106 [US3] Add Code Reviews tab to MainWindow.xaml with DataGrid
+ - [X] T107 [US3] Create DataTemplate for CodeReview display (ID, Title, Requester, Date, Status)
+ - [X] T108 [US3] Add "Open in Browser" button to CodeReview row template
+ - [X] T109 [US3] Add "Open in Visual Studio" button to CodeReview row template
+ - [X] T110 [US3] Add code review count badge to tab header with binding
+ - [X] T111 [US3] Add CodeReviewTabViewModel to MainViewModel composition
+ - [X] T112 [US3] Integrate code reviews refresh into MainViewModel.RefreshAllCommand
+ - [X] T113 [US3] Add loading indicator to Code Reviews tab during data fetch
+ - [X] T114 [US3] Add empty state message when no code reviews assigned
+ - [X] T115 [US3] Implement error handling for code reviews API failures
+ - [X] T116 [US3] Register CodeReviewTabViewModel in dependency injection
 
 **Checkpoint**: All user stories should now be independently functional - users can view work items, pull requests, and code reviews, and refresh all data
 
@@ -383,17 +392,17 @@ With multiple developers:
 
 ## Task Count Summary
 
-- **Total Tasks**: 146
-- **Phase 1 (Setup)**: 18 tasks
-- **Phase 2 (Foundational)**: 20 tasks (BLOCKS all user stories)
-- **Phase 3 (User Story 1)**: 32 tasks - **MVP CORE**
-- **Phase 4 (User Story 4)**: 12 tasks - **MVP ENHANCEMENT**
-- **Phase 5 (User Story 2)**: 17 tasks
-- **Phase 6 (User Story 3)**: 17 tasks
-- **Phase 7 (Removed)**: 0 tasks
-- **Phase 8 (Performance)**: 8 tasks
-- **Phase 9 (Polish)**: 15 tasks
-- **Remediation Additions**: 7 tasks
+ - **Total Tasks**: 156
+ - **Phase 1 (Setup)**: 18 tasks
+ - **Phase 2 (Foundational)**: 23 tasks (BLOCKS all user stories)
+ - **Phase 3 (User Story 1)**: 35 tasks - **MVP CORE**
+ - **Phase 4 (User Story 4)**: 13 tasks - **MVP ENHANCEMENT**
+ - **Phase 5 (User Story 2)**: 17 tasks
+ - **Phase 6 (User Story 3)**: 17 tasks
+ - **Phase 7 (Removed)**: 0 tasks
+ - **Phase 8 (Performance)**: 8 tasks
+ - **Phase 9 (Polish)**: 15 tasks
+ - **Remediation Additions**: 13 tasks
 
 **MVP Scope**: Setup (18) + Foundational (20) + US1 (32) + US4 (12) + Remediation core (T159-T160) = **84 tasks**
 
@@ -410,9 +419,16 @@ With multiple developers:
 ## Remediation Additions (New Tasks)
 
 - [X] T159 Implement AutoRefreshTimer (5 min) in MainViewModel (FR-016, SC-008) in src/TfsViewer.App/ViewModels/MainViewModel.cs
-- [ ] T160 Add CancelCommand to each tab ViewModel (WorkItems, PullRequests, CodeReviews) to stop in-flight loads (FR-026, SC-014)
+ - [X] T160 Add CancelCommand to each tab ViewModel (WorkItems, PullRequests, CodeReviews) to stop in-flight loads (FR-026, SC-014)
 - [ ] T161 Implement VsDetectionErrorDialog with fallback message in src/TfsViewer.App/Views/VsDetectionErrorDialog.xaml (FR-023, SC-005)
 - [ ] T162 Add ReadOnlyAudit script to verify no mutation endpoints invoked (SC-010) in scripts/ReadOnlyAudit.ps1
 - [X] T163 Refactor code references from StoriesTabViewModel to WorkItemsTabViewModel across src/TfsViewer.App/ViewModels/
 - [ ] T164 Standardize cache TTL to 5 minutes for all item types (update pull request TTL from 2m) in src/TfsViewer.Core/Services/TfsService.cs
 - [ ] T165 Add UsabilitySmokeTest for first-run success (SC-011) in tests/Usability/UsabilitySmokeTest.cs
+ 
+ - [ ] T166 [P] Update IsVisualStudioInstalled method in LauncherService to detect VS 2022 specifically via registry key HKLM\SOFTWARE\Microsoft\VisualStudio\17.0 (FR-029)
+ - [ ] T167 [P] Add FR-031 verification: Ensure no mutex or single-instance enforcement in App.xaml.cs (allow multiple instances)
+ - [ ] T168 Apply Polly retry policy to TfsService.GetPullRequestsAsync with same configuration as T081a (FR-028)
+ - [ ] T169 Apply Polly retry policy to TfsService.GetCodeReviewsAsync with same configuration as T081a (FR-028)
+ - [ ] T170 Add LoggingService integration to PullRequestTabViewModel for error logging (FR-030)
+ - [ ] T171 Add LoggingService integration to CodeReviewTabViewModel for error logging (FR-030)

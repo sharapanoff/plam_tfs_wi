@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TfsViewer.App.Services;
 using TfsViewer.Core.Contracts;
+using System.Threading;
 
 namespace TfsViewer.App.ViewModels;
 
@@ -14,6 +15,7 @@ public partial class WorkItemsTabViewModel : ObservableObject
 {
     private readonly ITfsService _tfsService;
     private readonly ILauncherService _launcherService;
+    private CancellationTokenSource? _loadCts;
 
     [ObservableProperty]
     private ObservableCollection<WorkItemViewModel> _workItems = new();
@@ -42,10 +44,12 @@ public partial class WorkItemsTabViewModel : ObservableObject
 
         IsLoading = true;
         ErrorMessage = null;
+        _loadCts?.Cancel();
+        _loadCts = new CancellationTokenSource();
 
         try
         {
-            var workItems = await _tfsService.GetAssignedWorkItemsAsync();
+            var workItems = await _tfsService.GetAssignedWorkItemsAsync(_loadCts.Token);
             WorkItems.Clear();
 
             foreach (var item in workItems)
@@ -63,8 +67,18 @@ public partial class WorkItemsTabViewModel : ObservableObject
         finally
         {
             IsLoading = false;
+            _loadCts?.Dispose();
+            _loadCts = null;
         }
     }
+
+    [RelayCommand(CanExecute = nameof(CanCancel))]
+    private void Cancel()
+    {
+        _loadCts?.Cancel();
+    }
+
+    private bool CanCancel() => IsLoading;
 
     [RelayCommand(CanExecute = nameof(CanOpenWorkItem))]
     private void OpenInBrowser(WorkItemViewModel? workItem)

@@ -93,10 +93,20 @@
                     </Grid.RowDefinitions>
 
                     <!-- Loading Indicator -->
-                    <ProgressBar Grid.Row="0"
-                                 IsIndeterminate="True"
-                                 Height="4"
-                                 Visibility="{Binding WorkItemsTab.IsLoading, Converter={StaticResource BoolToVisConverter}}"/>
+                    <DockPanel Grid.Row="0">
+                        <ProgressBar DockPanel.Dock="Left"
+                                     IsIndeterminate="True"
+                                     Height="4"
+                                     Width="Auto"
+                                     Visibility="{Binding WorkItemsTab.IsLoading, Converter={StaticResource BoolToVisConverter}}"/>
+                        <Button DockPanel.Dock="Right"
+                                Content="Cancel"
+                                Command="{Binding WorkItemsTab.CancelCommand}"
+                                Visibility="{Binding WorkItemsTab.IsLoading, Converter={StaticResource BoolToVisConverter}}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Margin="5,0,0,0"
+                                Padding="10,2"/>
+                    </DockPanel>
 
                     <!-- Work Items DataGrid -->
                     <DataGrid Grid.Row="1"
@@ -157,6 +167,171 @@
                                FontSize="16"
                                Foreground="Gray"
                                Visibility="{Binding WorkItemsTab.WorkItemCount, Converter={StaticResource InverseBoolToVisConverter}}"/>
+                </Grid>
+            </TabItem>
+
+            <!-- Pull Requests Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="SourcePull" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Text="Pull Requests" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <Border Background="{DynamicResource PrimaryHueMidBrush}"
+                                CornerRadius="10"
+                                Padding="6,2"
+                                Visibility="{Binding PullRequestsTab.PullRequestCount, Converter={StaticResource BoolToVisConverter}}">
+                            <TextBlock Text="{Binding PullRequestsTab.PullRequestCount}" 
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <DockPanel Grid.Row="0">
+                        <ProgressBar DockPanel.Dock="Left"
+                                     IsIndeterminate="True"
+                                     Height="4"
+                                     Visibility="{Binding PullRequestsTab.IsLoading, Converter={StaticResource BoolToVisConverter}}"/>
+                        <Button DockPanel.Dock="Right"
+                                Content="Cancel"
+                                Command="{Binding PullRequestsTab.CancelCommand}"
+                                Visibility="{Binding PullRequestsTab.IsLoading, Converter={StaticResource BoolToVisConverter}}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Margin="5,0,0,0"
+                                Padding="10,2"/>
+                    </DockPanel>
+
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding PullRequestsTab.PullRequests}"
+                              SelectedItem="{Binding PullRequestsTab.SelectedPullRequest}"
+                              Style="{StaticResource DataGridStyle}"
+                              Margin="0,10,0,0">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
+                            <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                            <DataGridTextColumn Header="Author" Binding="{Binding Author}" Width="160"/>
+                            <DataGridTextColumn Header="Date" Binding="{Binding CreationDate, StringFormat={}{0:yyyy-MM-dd}}" Width="120"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+
+                            <DataGridTemplateColumn Header="Actions" Width="200">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Content="Browser"
+                                                    Command="{Binding DataContext.PullRequestsTab.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    Margin="0,0,5,0"
+                                                    Padding="10,4"/>
+                                            <Button Content="VS"
+                                                    Command="{Binding DataContext.PullRequestsTab.OpenInVisualStudioCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    Padding="10,4"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <TextBlock Grid.Row="1"
+                               Text="No pull requests assigned to you"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="16"
+                               Foreground="Gray"
+                               Visibility="{Binding PullRequestsTab.PullRequestCount, Converter={StaticResource InverseBoolToVisConverter}}"/>
+                </Grid>
+            </TabItem>
+
+            <!-- Code Reviews Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ClipboardTextOutline" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Text="Code Reviews" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <Border Background="{DynamicResource PrimaryHueMidBrush}"
+                                CornerRadius="10"
+                                Padding="6,2"
+                                Visibility="{Binding CodeReviewsTab.CodeReviewCount, Converter={StaticResource BoolToVisConverter}}">
+                            <TextBlock Text="{Binding CodeReviewsTab.CodeReviewCount}" 
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <DockPanel Grid.Row="0">
+                        <ProgressBar DockPanel.Dock="Left"
+                                     IsIndeterminate="True"
+                                     Height="4"
+                                     Visibility="{Binding CodeReviewsTab.IsLoading, Converter={StaticResource BoolToVisConverter}}"/>
+                        <Button DockPanel.Dock="Right"
+                                Content="Cancel"
+                                Command="{Binding CodeReviewsTab.CancelCommand}"
+                                Visibility="{Binding CodeReviewsTab.IsLoading, Converter={StaticResource BoolToVisConverter}}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Margin="5,0,0,0"
+                                Padding="10,2"/>
+                    </DockPanel>
+
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding CodeReviewsTab.CodeReviews}"
+                              SelectedItem="{Binding CodeReviewsTab.SelectedCodeReview}"
+                              Style="{StaticResource DataGridStyle}"
+                              Margin="0,10,0,0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
+                            <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                            <DataGridTextColumn Header="Requester" Binding="{Binding Requester}" Width="160"/>
+                            <DataGridTextColumn Header="Date" Binding="{Binding CreationDate, StringFormat={}{0:yyyy-MM-dd}}" Width="120"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+
+                            <DataGridTemplateColumn Header="Actions" Width="200">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Content="Browser"
+                                                    Command="{Binding DataContext.CodeReviewsTab.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    Margin="0,0,5,0"
+                                                    Padding="10,4"/>
+                                            <Button Content="VS"
+                                                    Command="{Binding DataContext.CodeReviewsTab.OpenInVisualStudioCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    Padding="10,4"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <TextBlock Grid.Row="1"
+                               Text="No code reviews assigned to you"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="16"
+                               Foreground="Gray"
+                               Visibility="{Binding CodeReviewsTab.CodeReviewCount, Converter={StaticResource InverseBoolToVisConverter}}"/>
                 </Grid>
             </TabItem>
 

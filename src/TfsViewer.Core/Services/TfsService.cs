@@ -2,12 +2,14 @@ using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
+using Microsoft.TeamFoundation.SourceControl.WebApi;
 using TfsViewer.Core.Api;
 using TfsViewer.Core.Contracts;
 using TfsViewer.Core.Exceptions;
 using TfsViewer.Core.Models;
 using TfsWorkItem = Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem;
 
+using TfsViewer.Core.Infrastructure;
 namespace TfsViewer.Core.Services;
 
 /// <summary>
@@ -16,13 +18,15 @@ namespace TfsViewer.Core.Services;
 public class TfsService : ITfsService, IDisposable
 {
     private readonly ICacheService _cacheService;
+    private readonly ILoggingService? _logging;
     private TfsApiClient? _apiClient;
     private TfsCredentials? _credentials;
     private string? _currentUser;
 
-    public TfsService(ICacheService cacheService)
+    public TfsService(ICacheService cacheService, ILoggingService? logging = null)
     {
         _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
+        _logging = logging;
     }
 
     public bool IsConnected => _apiClient?.GetConnection() != null;
@@ -158,7 +162,8 @@ public class TfsService : ITfsService, IDisposable
                 ORDER BY [System.ChangedDate] DESC";
 
             var wiql = new Wiql { Query = query };
-            var queryResult = await witClient.QueryByWiqlAsync(wiql, cancellationToken: cancellationToken);
+            var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
+            var queryResult = await retry.ExecuteAsync(ct => witClient.QueryByWiqlAsync(wiql, cancellationToken: ct), cancellationToken);
 
             if (queryResult.WorkItems == null || !queryResult.WorkItems.Any())
             {
@@ -175,7 +180,7 @@ public class TfsService : ITfsService, IDisposable
                 //"System.Priority", "System.AreaPath", "System.IterationPath"
             };
 
-            var tfsWorkItems = await witClient.GetWorkItemsAsync(ids, fields, cancellationToken: cancellationToken);
+            var tfsWorkItems = await retry.ExecuteAsync(ct => witClient.GetWorkItemsAsync(ids, fields, cancellationToken: ct), cancellationToken);
 
             var result = tfsWorkItems.Select(wi => new Models.WorkItem
             {
@@ -200,6 +205,7 @@ public class TfsService : ITfsService, IDisposable
         }
         catch (Exception ex) when (ex is not TfsServiceException)
         {
+            _logging?.LogError("Failed to retrieve work items", ex);
             throw new TfsServiceException($"Failed to retrieve work items: {ex.Message}", ex)
             {
                 ServerUrl = _credentials?.ServerUrl,
@@ -210,14 +216,110 @@ public class TfsService : ITfsService, IDisposable
 
     public Task<IEnumerable<PullRequest>> GetPullRequestsAsync(CancellationToken cancellationToken = default)
     {
-        // Placeholder - will be implemented in User Story 2
-        return Task.FromResult(Enumerable.Empty<PullRequest>());
+        if (!IsConnected)
+        {
+            throw new TfsServiceException("Not connected to TFS server") { Operation = "GetPullRequests" };
+        }
+
+        try
+        {
+            var gitClient = _apiClient?.GetGitClient();
+            var connection = _apiClient?.GetConnection();
+            if (gitClient == null || connection == null)
+            {
+                throw new TfsServiceException("Git client not available") { Operation = "GetPullRequests" };
+            }
+
+            // Enumerate repositories and collect PRs where current user is a reviewer
+            var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
+            return retry.ExecuteAsync(async ct =>
+            {
+                var prs = new List<PullRequest>();
+                var repos = await gitClient.GetRepositoriesAsync(cancellationToken: ct);
+                foreach (var repo in repos)
+                {
+                    var criteria = new GitPullRequestSearchCriteria
+                    {
+                        Status = PullRequestStatus.Active
+                    };
+                    var prList = await gitClient.GetPullRequestsAsync(repo.Id, criteria, cancellationToken: ct);
+                    foreach (var pr in prList)
+                    {
+                        if (pr.Reviewers != null && pr.Reviewers.Any(r => string.Equals(r.DisplayName, _currentUser, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            prs.Add(new PullRequest
+                            {
+                                Id = pr.PullRequestId,
+                                Title = pr.Title ?? string.Empty,
+                                CreatedBy = pr.CreatedBy?.DisplayName ?? string.Empty,
+                                CreatedDate = pr.CreationDate,
+                                Status = pr.Status.ToString(),
+                                Url = pr.Url ?? string.Empty
+                            });
+                        }
+                    }
+                }
+                return (IEnumerable<PullRequest>)prs;
+            }, cancellationToken);
+        }
+        catch (Exception ex) when (ex is not TfsServiceException)
+        {
+            _logging?.LogError("Failed to retrieve pull requests", ex);
+            throw new TfsServiceException($"Failed to retrieve pull requests: {ex.Message}", ex)
+            {
+                ServerUrl = _credentials?.ServerUrl,
+                Operation = "GetPullRequests"
+            };
+        }
     }
 
     public Task<IEnumerable<CodeReview>> GetCodeReviewsAsync(CancellationToken cancellationToken = default)
     {
-        // Placeholder - will be implemented in User Story 3
-        return Task.FromResult(Enumerable.Empty<CodeReview>());
+        if (!IsConnected)
+        {
+            throw new TfsServiceException("Not connected to TFS server") { Operation = "GetCodeReviews" };
+        }
+
+        try
+        {
+            var tfvcClient = _apiClient?.GetTfvcClient();
+            if (tfvcClient == null)
+            {
+                // Some TFS instances may not support TFVC code reviews; return empty gracefully
+                return Task.FromResult(Enumerable.Empty<CodeReview>());
+            }
+
+            var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
+            return retry.ExecuteAsync(async ct =>
+            {
+                var reviews = new List<CodeReview>();
+                // TFVC code review APIs are limited; using changesets as placeholder for demonstration
+                var changesets = await tfvcClient.GetChangesetsAsync(top: 50, cancellationToken: ct);
+                foreach (var cs in changesets)
+                {
+                    // Placeholder mapping; real implementation would use Code Review work item type
+                    reviews.Add(new CodeReview
+                    {
+                        Id = cs.ChangesetId,
+                        Title = cs.Comment ?? $"Changeset {cs.ChangesetId}",
+                        RequestedBy = cs.Author?.DisplayName ?? string.Empty,
+                        CreatedDate = cs.CreatedDate,
+                        Status = "Pending",
+                        Url = cs.Url ?? string.Empty
+                    });
+                }
+                return (IEnumerable<CodeReview>)reviews;
+            }, cancellationToken);
+        }
+        catch (Exception ex) when (ex is not TfsServiceException)
+        {
+            _logging?.LogError("Failed to retrieve code reviews", ex);
+            throw new TfsServiceException($"Failed to retrieve code reviews: {ex.Message}", ex)
+            {
+                ServerUrl = _credentials?.ServerUrl,
+                Operation = "GetCodeReviews"
+            };
+        }
     }
 
     public void Dispose()

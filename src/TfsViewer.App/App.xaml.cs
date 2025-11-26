@@ -44,7 +44,13 @@ public partial class App : Application
         // Core services
         services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<ICredentialStore, CredentialStore>();
-        services.AddSingleton<ITfsService, TfsService>();
+        services.AddSingleton<ILoggingService, LoggingService>();
+        services.AddSingleton<ITfsService>(sp =>
+        {
+            var cache = sp.GetRequiredService<ICacheService>();
+            var log = sp.GetService<ILoggingService>();
+            return new TfsService(cache, log);
+        });
         services.AddTransient<TfsApiClient>();
 
         // App services
@@ -53,7 +59,20 @@ public partial class App : Application
 
         // ViewModels
         services.AddSingleton<WorkItemsTabViewModel>();
-        services.AddSingleton<MainViewModel>();
+        services.AddSingleton<PullRequestTabViewModel>();
+        services.AddSingleton<CodeReviewTabViewModel>();
+        services.AddSingleton<MainViewModel>(sp =>
+        {
+            return new MainViewModel(
+                sp.GetRequiredService<ITfsService>(),
+                sp.GetRequiredService<ICredentialStore>(),
+                sp.GetRequiredService<Configuration>(),
+                sp.GetRequiredService<ICacheService>(),
+                sp.GetRequiredService<WorkItemsTabViewModel>(),
+                sp.GetRequiredService<PullRequestTabViewModel>(),
+                sp.GetRequiredService<CodeReviewTabViewModel>()
+            );
+        });
     }
 
     protected override void OnExit(ExitEventArgs e)

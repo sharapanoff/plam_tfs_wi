@@ -23,6 +23,12 @@ public partial class MainViewModel : ObservableObject
     private WorkItemsTabViewModel _workItemsTab;
 
     [ObservableProperty]
+    private PullRequestTabViewModel? _pullRequestsTab;
+
+    [ObservableProperty]
+    private CodeReviewTabViewModel? _codeReviewsTab;
+
+    [ObservableProperty]
     private bool _isLoading;
 
     [ObservableProperty]
@@ -36,13 +42,17 @@ public partial class MainViewModel : ObservableObject
         ICredentialStore credentialStore,
         Configuration configuration,
         ICacheService cacheService,
-        WorkItemsTabViewModel workItemsTab)
+        WorkItemsTabViewModel workItemsTab,
+        PullRequestTabViewModel? pullRequestsTab = null,
+        CodeReviewTabViewModel? codeReviewsTab = null)
     {
         _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
         _credentialStore = credentialStore ?? throw new ArgumentNullException(nameof(credentialStore));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
         _workItemsTab = workItemsTab ?? throw new ArgumentNullException(nameof(workItemsTab));
+        _pullRequestsTab = pullRequestsTab;
+        _codeReviewsTab = codeReviewsTab;
 
         // Setup auto-refresh timer (5 minutes)
         _autoRefreshTimer = new DispatcherTimer
@@ -141,13 +151,23 @@ public partial class MainViewModel : ObservableObject
     {
         IsLoading = true;
         RefreshCommand.NotifyCanExecuteChanged();
-        StatusMessage = "Loading work items...";
+        StatusMessage = "Loading data...";
 
         try
         {
             await WorkItemsTab.LoadWorkItemsAsync();
+            if (PullRequestsTab != null)
+            {
+                await PullRequestsTab.LoadPullRequestsAsync();
+            }
+            if (CodeReviewsTab != null)
+            {
+                await CodeReviewsTab.LoadCodeReviewsAsync();
+            }
             LastRefreshTime = DateTime.Now;
-            StatusMessage = $"Loaded {WorkItemsTab.WorkItemCount} work items";
+            var prCount = PullRequestsTab?.PullRequestCount ?? 0;
+            var crCount = CodeReviewsTab?.CodeReviewCount ?? 0;
+            StatusMessage = $"Loaded {WorkItemsTab.WorkItemCount} work items, {prCount} PRs, {crCount} reviews";
         }
         catch (Exception ex)
         {

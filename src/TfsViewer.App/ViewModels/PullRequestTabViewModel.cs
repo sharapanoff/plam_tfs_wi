@@ -1,0 +1,97 @@
+using System.Collections.ObjectModel;
+using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using TfsViewer.App.Services;
+using TfsViewer.Core.Contracts;
+using System.Threading;
+
+namespace TfsViewer.App.ViewModels;
+
+public partial class PullRequestTabViewModel : ObservableObject
+{
+    private readonly ITfsService _tfsService;
+    private readonly ILauncherService _launcherService;
+    private CancellationTokenSource? _loadCts;
+
+    [ObservableProperty]
+    private ObservableCollection<PullRequestViewModel> _pullRequests = new();
+
+    [ObservableProperty]
+    private bool _isLoading;
+
+    [ObservableProperty]
+    private string? _errorMessage;
+
+    [ObservableProperty]
+    private PullRequestViewModel? _selectedPullRequest;
+
+    public int PullRequestCount => PullRequests.Count;
+
+    public PullRequestTabViewModel(ITfsService tfsService, ILauncherService launcherService)
+    {
+        _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
+        _launcherService = launcherService ?? throw new ArgumentNullException(nameof(launcherService));
+    }
+
+    [RelayCommand]
+    public async Task LoadPullRequestsAsync()
+    {
+        if (IsLoading) return;
+
+        IsLoading = true;
+        ErrorMessage = null;
+        _loadCts?.Cancel();
+        _loadCts = new CancellationTokenSource();
+
+        try
+        {
+            var prs = await _tfsService.GetPullRequestsAsync(_loadCts.Token);
+            PullRequests.Clear();
+            foreach (var pr in prs)
+            {
+                PullRequests.Add(PullRequestViewModel.FromModel(pr));
+            }
+            OnPropertyChanged(nameof(PullRequestCount));
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load pull requests: {ex.Message}";
+            MessageBox.Show(ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            _loadCts?.Dispose();
+            _loadCts = null;
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanOpen))]
+    private void OpenInBrowser(PullRequestViewModel? pr)
+    {
+        if (pr != null && !string.IsNullOrWhiteSpace(pr.Url))
+        {
+            _launcherService.OpenInBrowser(pr.Url);
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanOpen))]
+    private void OpenInVisualStudio(PullRequestViewModel? pr)
+    {
+        if (pr != null)
+        {
+            // Pass the PR web URL as repository context for launcher fallback
+            _launcherService.OpenPullRequestInVisualStudio(pr.Id, pr.Url);
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanCancel))]
+    private void Cancel()
+    {
+        _loadCts?.Cancel();
+    }
+
+    private bool CanOpen() => SelectedPullRequest != null;
+    private bool CanCancel() => IsLoading;
+}
