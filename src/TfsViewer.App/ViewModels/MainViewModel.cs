@@ -37,6 +37,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private DateTime? _lastRefreshTime;
 
+    [ObservableProperty]
+    private string _trayTooltip = "TFS Viewer"; // Dynamic tooltip for tray icon
+
     public MainViewModel(
         ITfsService tfsService,
         ICredentialStore credentialStore,
@@ -168,6 +171,7 @@ public partial class MainViewModel : ObservableObject
             var prCount = PullRequestsTab?.PullRequestCount ?? 0;
             var crCount = CodeReviewsTab?.CodeReviewCount ?? 0;
             StatusMessage = $"Loaded {WorkItemsTab.WorkItemCount} work items, {prCount} PRs, {crCount} reviews";
+            TrayTooltip = $"Work Items: {WorkItemsTab.WorkItemCount} | PRs: {prCount} | Reviews: {crCount}";
         }
         catch (Exception ex)
         {

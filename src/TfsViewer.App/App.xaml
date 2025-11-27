@@ -14,7 +14,7 @@
             <infrastructure:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
             <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
             <tb:TaskbarIcon x:Key="TrayIcon"
-                            ToolTipText="{Binding StatusMessage}"
+                            ToolTipText="{Binding TrayTooltip}"
                             Visibility="Visible">
                 <tb:TaskbarIcon.ContextMenu>
                     <ContextMenu>
