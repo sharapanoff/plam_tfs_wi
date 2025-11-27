@@ -128,7 +128,7 @@ public class LauncherService : ILauncherService
                 throw new InvalidOperationException("Visual Studio path is not configured or invalid");
             }
 
-            var reviewUrl = $"{serverUrl}/_workitems/edit/{codeReviewId}";
+            var reviewUrl = $"vstfs:///CodeReview/ReviewId/{codeReviewId}";// $"{serverUrl}/_workitems/edit/{codeReviewId}";
             var arguments = string.IsNullOrWhiteSpace(vsArgument) ? reviewUrl : $"{vsArgument} \"{reviewUrl}\"";
 
             Process.Start(new ProcessStartInfo

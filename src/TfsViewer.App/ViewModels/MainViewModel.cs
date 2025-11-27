@@ -143,7 +143,7 @@ public partial class MainViewModel : ObservableObject
         if (result == true && settingsViewModel.ConnectionSuccessful)
         {
             StatusMessage = $"Connected to {_configuration.LastServerUrl}";
-            _ = LoadDataAsync();
+            //_ = LoadDataAsync();
         }
     }
 

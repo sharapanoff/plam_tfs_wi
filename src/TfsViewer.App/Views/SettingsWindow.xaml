@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="TFS Connection Settings" 
-        Height="431" 
+        Height="536" 
         Width="500"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" 
-                   Text="TFS Server Connection" 
+                   Text="settings" 
                    Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                    Margin="0,0,0,20"/>
 
@@ -41,7 +41,6 @@
             <TextBox materialDesign:HintAssist.Hint="Browser Argument (optional - e.g., --new-window)"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Text="{Binding BrowserArgument, UpdateSourceTrigger=PropertyChanged}"/>
-                                         Margin="0,0,0,10"/>
 
                         <TextBox materialDesign:HintAssist.Hint="Visual Studio Exe (optional - e.g., C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe)"
                                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -84,7 +83,7 @@
                     Orientation="Horizontal" 
                     HorizontalAlignment="Right">
             
-            <Button Content="Connect"
+            <Button Content="OK"
                     Command="{Binding ConnectCommand}"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     IsDefault="True"
