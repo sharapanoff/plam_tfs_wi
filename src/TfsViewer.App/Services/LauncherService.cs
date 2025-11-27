@@ -1,6 +1,9 @@
 using System.Diagnostics;
 using System.IO;
+
 using Microsoft.Win32;
+
+using TfsViewer.Core.Models;
 
 namespace TfsViewer.App.Services;
 
@@ -70,7 +73,10 @@ public class LauncherService : ILauncherService
                 throw new InvalidOperationException("Visual Studio path is not configured or invalid");
             }
 
-            var workItemUrl = $"{serverUrl}/_workitems/edit/{workItemId}";
+            var workItemUrl = 
+                "";
+                //$" /TfsLink \"vstfs:///WorkItemTracking/WorkItem/{workItemId}?url={credentials?.ServerUrl}\"";
+                //$"{serverUrl}/_workitems/edit/{workItemId}";
             var arguments = string.IsNullOrWhiteSpace(vsArgument) ? workItemUrl : $"{vsArgument} \"{workItemUrl}\"";
 
             Process.Start(new ProcessStartInfo
@@ -128,7 +134,10 @@ public class LauncherService : ILauncherService
                 throw new InvalidOperationException("Visual Studio path is not configured or invalid");
             }
 
-            var reviewUrl = $"vstfs:///CodeReview/ReviewId/{codeReviewId}";// $"{serverUrl}/_workitems/edit/{codeReviewId}";
+            var reviewUrl = 
+                $" /TfsLink \"vstfs:///CodeReview/CodeReviewID/{codeReviewId}?url={credentials?.ServerUrl}\"";
+                //$"vstfs:///CodeReview/ReviewId/{codeReviewId}";
+                // $"{serverUrl}/_workitems/edit/{codeReviewId}";
             var arguments = string.IsNullOrWhiteSpace(vsArgument) ? reviewUrl : $"{vsArgument} \"{reviewUrl}\"";
 
             Process.Start(new ProcessStartInfo
