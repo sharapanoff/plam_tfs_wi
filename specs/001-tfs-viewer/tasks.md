@@ -434,3 +434,6 @@ With multiple developers:
  - [X] T171 Add LoggingService integration to CodeReviewTabViewModel for error logging (FR-030)
  - [X] T172 **BUG**: Filter out work items of type "DevNotes" and "Code Review" from GetAssignedWorkItemsAsync WIQL query in src/TfsViewer.Core/Services/TfsService.cs
  - [X] T173 **BUG**: Fix GetCodeReviewsAsync to load all work items with Type='Code Review Response' instead of current incorrect implementation in src/TfsViewer.Core/Services/TfsService.cs
+ - [X] T174 **FEATURE**: Add BrowserTarget setting to SettingsWindow to allow custom browser executable path instead of using default browser for OpenInBrowser functionality in src/TfsViewer.App/Views/SettingsWindow.xaml and src/TfsViewer.Core/Models/TfsCredentials.cs
+ - [X] T175 **FEATURE**: Update LauncherService.OpenInBrowser to use BrowserTarget setting if configured, otherwise fall back to default browser in src/TfsViewer.App/Services/LauncherService.cs
+ - [X] T176 **BUG**: BrowserTarget should support two components: path to exe and argument; url should be appended after the argument (update TfsCredentials, SettingsWindow, SettingsViewModel, LauncherService)

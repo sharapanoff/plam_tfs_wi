@@ -9,7 +9,13 @@ namespace TfsViewer.App.Services;
 /// </summary>
 public class LauncherService : ILauncherService
 {
+    private readonly TfsViewer.Core.Contracts.ICredentialStore _credentialStore;
     private string? _cachedVsPath;
+
+    public LauncherService(TfsViewer.Core.Contracts.ICredentialStore credentialStore)
+    {
+        _credentialStore = credentialStore ?? throw new ArgumentNullException(nameof(credentialStore));
+    }
 
     public void OpenInBrowser(string url)
     {
@@ -18,11 +24,33 @@ public class LauncherService : ILauncherService
 
         try
         {
-            Process.Start(new ProcessStartInfo
+            var credentials = _credentialStore.LoadCredentials();
+            var browserExePath = credentials?.BrowserExePath;
+            var browserArgument = credentials?.BrowserArgument;
+
+            if (!string.IsNullOrWhiteSpace(browserExePath) && File.Exists(browserExePath))
             {
-                FileName = url,
-                UseShellExecute = true
-            });
+                // Use custom browser with optional argument
+                var arguments = string.IsNullOrWhiteSpace(browserArgument) 
+                    ? url 
+                    : $"{browserArgument} {url}";
+                
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = browserExePath,
+                    Arguments = arguments,
+                    UseShellExecute = false
+                });
+            }
+            else
+            {
+                // Use default browser
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
         }
         catch (Exception ex)
         {

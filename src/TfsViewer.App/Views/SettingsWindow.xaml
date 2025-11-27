@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="TFS Connection Settings" 
-        Height="350" 
+        Height="431" 
         Width="500"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
@@ -27,11 +27,21 @@
                    Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                    Margin="0,0,0,20"/>
 
-        <TextBox Grid.Row="1"
-                 materialDesign:HintAssist.Hint="Server URL (e.g., https://tfs.company.com/tfs/DefaultCollection)"
-                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                 Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}"
-                 Margin="0,0,0,15"/>
+        <StackPanel Grid.Row="1" Margin="0,0,0,15">
+            <TextBox materialDesign:HintAssist.Hint="Server URL (e.g., https://tfs.company.com/tfs/DefaultCollection)"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0,0,0,10"/>
+            
+            <TextBox materialDesign:HintAssist.Hint="Custom Browser Exe (optional - e.g., C:\\Program Files\\Mozilla Firefox\\firefox.exe)"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Text="{Binding BrowserExePath, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0,0,0,10"/>
+            
+            <TextBox materialDesign:HintAssist.Hint="Browser Argument (optional - e.g., --new-window)"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Text="{Binding BrowserArgument, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
 
         <CheckBox Grid.Row="2"
                   Content="Use Windows Authentication (Recommended)"

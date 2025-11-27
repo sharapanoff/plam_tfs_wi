@@ -14,7 +14,7 @@ public class CredentialStore : ICredentialStore
     
     private static readonly string CredentialsFile = Path.Combine(AppDataFolder, "credentials.json");
 
-    public void SaveCredentials(TfsCredentials credentials)
+    public void SaveCredentials(CConsts credentials)
     {
         if (credentials == null)
             throw new ArgumentNullException(nameof(credentials));
@@ -29,7 +29,7 @@ public class CredentialStore : ICredentialStore
         File.WriteAllText(CredentialsFile, json);
     }
 
-    public TfsCredentials? LoadCredentials()
+    public CConsts? LoadCredentials()
     {
         if (!File.Exists(CredentialsFile))
             return null;
@@ -37,7 +37,7 @@ public class CredentialStore : ICredentialStore
         try
         {
             var json = File.ReadAllText(CredentialsFile);
-            return JsonSerializer.Deserialize<TfsCredentials>(json);
+            return JsonSerializer.Deserialize<CConsts>(json);
         }
         catch
         {

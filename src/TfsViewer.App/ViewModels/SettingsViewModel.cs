@@ -25,6 +25,12 @@ public partial class SettingsViewModel : ObservableObject
     private bool _useWindowsAuthentication = true;
 
     [ObservableProperty]
+    private string? _browserExePath;
+
+    [ObservableProperty]
+    private string? _browserArgument;
+
+    [ObservableProperty]
     private string? _connectionStatus;
 
     [ObservableProperty]
@@ -56,6 +62,8 @@ public partial class SettingsViewModel : ObservableObject
         {
             ServerUrl = credentials.ServerUrl;
             UseWindowsAuthentication = credentials.UseWindowsAuthentication;
+            BrowserExePath = credentials.BrowserExePath;
+            BrowserArgument = credentials.BrowserArgument;
         }
         else if (!string.IsNullOrWhiteSpace(_configuration.LastServerUrl))
         {
@@ -80,11 +88,14 @@ public partial class SettingsViewModel : ObservableObject
 
         try
         {
-            var credentials = new TfsCredentials
+            var credentials = new CConsts
             {
                 ServerUrl = ServerUrl.Trim(),
-                UseWindowsAuthentication = UseWindowsAuthentication
+                UseWindowsAuthentication = UseWindowsAuthentication,
+                BrowserExePath = string.IsNullOrWhiteSpace(BrowserExePath) ? null : BrowserExePath.Trim(),
+                BrowserArgument = string.IsNullOrWhiteSpace(BrowserArgument) ? null : BrowserArgument.Trim()
             };
+
 
             var result = await _tfsService.ConnectAsync(credentials);
 
@@ -126,10 +137,12 @@ public partial class SettingsViewModel : ObservableObject
 
         try
         {
-            var credentials = new TfsCredentials
+            var credentials = new CConsts
             {
                 ServerUrl = ServerUrl.Trim(),
-                UseWindowsAuthentication = UseWindowsAuthentication
+                UseWindowsAuthentication = UseWindowsAuthentication,
+                BrowserExePath = string.IsNullOrWhiteSpace(BrowserExePath) ? null : BrowserExePath.Trim(),
+                BrowserArgument = string.IsNullOrWhiteSpace(BrowserArgument) ? null : BrowserArgument.Trim()
             };
 
             var result = await _tfsService.ConnectAsync(credentials);

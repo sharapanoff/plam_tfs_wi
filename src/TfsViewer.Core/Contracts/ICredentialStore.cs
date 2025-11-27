@@ -7,9 +7,9 @@ namespace TfsViewer.Core.Contracts;
 /// </summary>
 public interface ICredentialStore
 {
-    void SaveCredentials(TfsCredentials credentials);
+    void SaveCredentials(CConsts credentials);
     
-    TfsCredentials? LoadCredentials();
+    CConsts? LoadCredentials();
     
     void ClearCredentials();
     

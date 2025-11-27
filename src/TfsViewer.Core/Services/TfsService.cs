@@ -20,7 +20,7 @@ public class TfsService : ITfsService, IDisposable
     private readonly ICacheService _cacheService;
     private readonly ILoggingService? _logging;
     private TfsApiClient? _apiClient;
-    private TfsCredentials? _credentials;
+    private CConsts? _credentials;
     private string? _currentUser;
 
     public TfsService(ICacheService cacheService, ILoggingService? logging = null)
@@ -33,7 +33,7 @@ public class TfsService : ITfsService, IDisposable
 
     public string? CurrentUser => _currentUser;
 
-    public async Task<ConnectionResult> ConnectAsync(TfsCredentials credentials, CancellationToken cancellationToken = default)
+    public async Task<ConnectionResult> ConnectAsync(CConsts credentials, CancellationToken cancellationToken = default)
     {
         if (credentials == null)
             throw new ArgumentNullException(nameof(credentials));

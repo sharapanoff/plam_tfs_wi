@@ -7,7 +7,7 @@ namespace TfsViewer.Core.Contracts;
 /// </summary>
 public interface ITfsService
 {
-    Task<ConnectionResult> ConnectAsync(TfsCredentials credentials, CancellationToken cancellationToken = default);
+    Task<ConnectionResult> ConnectAsync(CConsts credentials, CancellationToken cancellationToken = default);
     
     Task<ConnectionResult> TestConnectionAsync(CancellationToken cancellationToken = default);
     
