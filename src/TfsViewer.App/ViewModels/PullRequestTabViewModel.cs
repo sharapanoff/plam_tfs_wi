@@ -92,6 +92,10 @@ public partial class PullRequestTabViewModel : ObservableObject
         _loadCts?.Cancel();
     }
 
-    private bool CanOpen() => SelectedPullRequest != null;
+    private bool CanOpen(PullRequestViewModel? workItem)
+    {
+        return workItem != null;
+    }
+
     private bool CanCancel() => IsLoading;
 }

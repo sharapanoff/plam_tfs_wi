@@ -80,7 +80,7 @@ public partial class WorkItemsTabViewModel : ObservableObject
 
     private bool CanCancel() => IsLoading;
 
-    [RelayCommand(CanExecute = nameof(CanOpenWorkItem))]
+    [RelayCommand(CanExecute = nameof(CanOpen))]
     private void OpenInBrowser(WorkItemViewModel? workItem)
     {
         if (workItem != null && !string.IsNullOrWhiteSpace(workItem.Url))
@@ -89,7 +89,7 @@ public partial class WorkItemsTabViewModel : ObservableObject
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanOpenWorkItem))]
+    [RelayCommand(CanExecute = nameof(CanOpen))]
     private void OpenInVisualStudio(WorkItemViewModel? workItem)
     {
         if (workItem != null && _tfsService.IsConnected)
@@ -99,5 +99,8 @@ public partial class WorkItemsTabViewModel : ObservableObject
         }
     }
 
-    private bool CanOpenWorkItem() => SelectedWorkItem != null;
+    private bool CanOpen(WorkItemViewModel? workItem)
+    {
+        return workItem != null;
+    }
 }

@@ -92,6 +92,10 @@ public partial class CodeReviewTabViewModel : ObservableObject
         _loadCts?.Cancel();
     }
 
-    private bool CanOpen() => SelectedCodeReview != null;
+    private bool CanOpen(CodeReviewViewModel? workItem)
+    {
+        return workItem != null;
+    }
+
     private bool CanCancel() => IsLoading;
 }
