@@ -153,12 +153,14 @@ public class TfsService : ITfsService, IDisposable
                 };
             }
 
-            // WIQL query to get assigned work items
+            // WIQL query to get assigned work items (exclude DevNotes and Code Review types)
             var query = $@"
                 SELECT [System.Id], [System.Title], [System.WorkItemType], [System.State], 
                        [System.AssignedTo], [System.CreatedDate], [System.ChangedDate]
                 FROM WorkItems
                 WHERE [System.AssignedTo] = @Me
+                  AND [System.WorkItemType] <> 'DevNotes'
+                  AND [System.WorkItemType] <> 'Code Review Response'
                 ORDER BY [System.ChangedDate] DESC";
 
             var wiql = new Wiql { Query = query };

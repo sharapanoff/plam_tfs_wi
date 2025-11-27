@@ -432,3 +432,4 @@ With multiple developers:
  - [X] T169 Apply Polly retry policy to TfsService.GetCodeReviewsAsync with same configuration as T081a (FR-028)
  - [X] T170 Add LoggingService integration to PullRequestTabViewModel for error logging (FR-030)
  - [X] T171 Add LoggingService integration to CodeReviewTabViewModel for error logging (FR-030)
+ - [X] T172 **BUG**: Filter out work items of type "DevNotes" and "Code Review" from GetAssignedWorkItemsAsync WIQL query in src/TfsViewer.Core/Services/TfsService.cs
