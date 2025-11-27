@@ -59,8 +59,20 @@ public partial class App : Application
 
         // ViewModels
         services.AddSingleton<WorkItemsTabViewModel>();
-        services.AddSingleton<PullRequestTabViewModel>();
-        services.AddSingleton<CodeReviewTabViewModel>();
+        services.AddSingleton<PullRequestTabViewModel>(sp =>
+        {
+            var tfs = sp.GetRequiredService<ITfsService>();
+            var launcher = sp.GetRequiredService<ILauncherService>();
+            var logging = sp.GetService<ILoggingService>();
+            return new PullRequestTabViewModel(tfs, launcher, logging);
+        });
+        services.AddSingleton<CodeReviewTabViewModel>(sp =>
+        {
+            var tfs = sp.GetRequiredService<ITfsService>();
+            var launcher = sp.GetRequiredService<ILauncherService>();
+            var logging = sp.GetService<ILoggingService>();
+            return new CodeReviewTabViewModel(tfs, launcher, logging);
+        });
         services.AddSingleton<MainViewModel>(sp =>
         {
             return new MainViewModel(

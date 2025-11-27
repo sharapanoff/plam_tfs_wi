@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using TfsViewer.App.Services;
 using TfsViewer.Core.Contracts;
 using System.Threading;
+using TfsViewer.Core.Services;
 
 namespace TfsViewer.App.ViewModels;
 
@@ -12,6 +13,7 @@ public partial class PullRequestTabViewModel : ObservableObject
 {
     private readonly ITfsService _tfsService;
     private readonly ILauncherService _launcherService;
+    private readonly ILoggingService? _logging;
     private CancellationTokenSource? _loadCts;
 
     [ObservableProperty]
@@ -28,10 +30,11 @@ public partial class PullRequestTabViewModel : ObservableObject
 
     public int PullRequestCount => PullRequests.Count;
 
-    public PullRequestTabViewModel(ITfsService tfsService, ILauncherService launcherService)
+    public PullRequestTabViewModel(ITfsService tfsService, ILauncherService launcherService, ILoggingService? logging = null)
     {
         _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
         _launcherService = launcherService ?? throw new ArgumentNullException(nameof(launcherService));
+        _logging = logging;
     }
 
     [RelayCommand]
@@ -57,6 +60,7 @@ public partial class PullRequestTabViewModel : ObservableObject
         catch (Exception ex)
         {
             ErrorMessage = $"Failed to load pull requests: {ex.Message}";
+            _logging?.LogError("Failed to load pull requests", ex);
             MessageBox.Show(ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally

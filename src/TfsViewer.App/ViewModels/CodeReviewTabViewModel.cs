@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using TfsViewer.App.Services;
 using TfsViewer.Core.Contracts;
 using System.Threading;
+using TfsViewer.Core.Services;
 
 namespace TfsViewer.App.ViewModels;
 
@@ -12,6 +13,7 @@ public partial class CodeReviewTabViewModel : ObservableObject
 {
     private readonly ITfsService _tfsService;
     private readonly ILauncherService _launcherService;
+    private readonly ILoggingService? _logging;
     private CancellationTokenSource? _loadCts;
 
     [ObservableProperty]
@@ -28,10 +30,11 @@ public partial class CodeReviewTabViewModel : ObservableObject
 
     public int CodeReviewCount => CodeReviews.Count;
 
-    public CodeReviewTabViewModel(ITfsService tfsService, ILauncherService launcherService)
+    public CodeReviewTabViewModel(ITfsService tfsService, ILauncherService launcherService, ILoggingService? logging = null)
     {
         _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
         _launcherService = launcherService ?? throw new ArgumentNullException(nameof(launcherService));
+        _logging = logging;
     }
 
     [RelayCommand]
@@ -57,6 +60,7 @@ public partial class CodeReviewTabViewModel : ObservableObject
         catch (Exception ex)
         {
             ErrorMessage = $"Failed to load code reviews: {ex.Message}";
+            _logging?.LogError("Failed to load code reviews", ex);
             MessageBox.Show(ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally

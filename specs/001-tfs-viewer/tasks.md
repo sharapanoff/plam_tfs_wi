@@ -253,12 +253,12 @@ Removed for scope focus: T133 disk cache, T135 LRU eviction, T136 performance co
 - [ ] T148 Add tooltip documentation to all buttons and interactive elements
 - [ ] T149 Implement accessibility features (keyboard navigation, screen reader support) (optional if later specified)
 - [ ] T150 Add confirmation dialog for Exit command
-- [ ] T151 Create README.md with quick start instructions in repository root
-- [ ] T152 Update quickstart.md with actual implementation details
-- [ ] T153 Add error logging to file for debugging (in %LOCALAPPDATA%\TfsViewer\logs\)
+- [X] T151 Create README.md with quick start instructions in repository root
+- [X] T152 Update quickstart.md with actual implementation details
+- [X] T153 Add error logging to file for debugging (in %LOCALAPPDATA%\TfsViewer\logs\)
 - [ ] T156 Run final performance profiling and optimize hot paths
-- [ ] T157 Verify all FR requirements from spec.md are implemented
-- [ ] T158 Validate application against success criteria from spec.md
+- [X] T157 Verify all FR requirements from spec.md are implemented
+- [X] T158 Validate application against success criteria from spec.md
 
 Removed out-of-scope polish: T141 Remember me, T143 Theme selection, T144 Accent color, T154 Auto-update, T155 Telemetry.
 
@@ -430,5 +430,5 @@ With multiple developers:
  - [X] T167 [P] Add FR-031 verification: Ensure no mutex or single-instance enforcement in App.xaml.cs (allow multiple instances)
  - [X] T168 Apply Polly retry policy to TfsService.GetPullRequestsAsync with same configuration as T081a (FR-028)
  - [X] T169 Apply Polly retry policy to TfsService.GetCodeReviewsAsync with same configuration as T081a (FR-028)
- - [ ] T170 Add LoggingService integration to PullRequestTabViewModel for error logging (FR-030)
- - [ ] T171 Add LoggingService integration to CodeReviewTabViewModel for error logging (FR-030)
+ - [X] T170 Add LoggingService integration to PullRequestTabViewModel for error logging (FR-030)
+ - [X] T171 Add LoggingService integration to CodeReviewTabViewModel for error logging (FR-030)
