@@ -12,8 +12,4 @@ public interface ILauncherService
     void OpenPullRequestInVisualStudio(int pullRequestId, string repositoryUrl);
     
     void OpenCodeReviewInVisualStudio(int codeReviewId, string serverUrl);
-    
-    bool IsVisualStudioInstalled();
-    
-    string? GetVisualStudioPath();
 }

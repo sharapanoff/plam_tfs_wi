@@ -10,7 +10,6 @@ namespace TfsViewer.App.Services;
 public class LauncherService : ILauncherService
 {
     private readonly TfsViewer.Core.Contracts.ICredentialStore _credentialStore;
-    private string? _cachedVsPath;
 
     public LauncherService(TfsViewer.Core.Contracts.ICredentialStore credentialStore)
     {
@@ -60,25 +59,25 @@ public class LauncherService : ILauncherService
 
     public void OpenWorkItemInVisualStudio(int workItemId, string serverUrl)
     {
-        if (!IsVisualStudioInstalled())
-        {
-            throw new InvalidOperationException("Visual Studio is not installed");
-        }
-
         try
         {
-            var vsPath = GetVisualStudioPath();
-            if (string.IsNullOrWhiteSpace(vsPath))
+            var credentials = _credentialStore.LoadCredentials();
+            var vsExePath = credentials?.VsExePath;
+            var vsArgument = credentials?.VsArgument;
+
+            if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
             {
-                throw new InvalidOperationException("Could not locate Visual Studio");
+                throw new InvalidOperationException("Visual Studio path is not configured or invalid");
             }
 
-            // Use vs:// protocol handler to open work item
-            var vsUri = $"vs://workitem/{workItemId}";
+            var workItemUrl = $"{serverUrl}/_workitems/edit/{workItemId}";
+            var arguments = string.IsNullOrWhiteSpace(vsArgument) ? workItemUrl : $"{vsArgument} \"{workItemUrl}\"";
+
             Process.Start(new ProcessStartInfo
             {
-                FileName = vsUri,
-                UseShellExecute = true
+                FileName = vsExePath,
+                Arguments = arguments,
+                UseShellExecute = false
             });
         }
         catch (Exception ex)
@@ -89,16 +88,26 @@ public class LauncherService : ILauncherService
 
     public void OpenPullRequestInVisualStudio(int pullRequestId, string repositoryUrl)
     {
-        if (!IsVisualStudioInstalled())
-        {
-            throw new InvalidOperationException("Visual Studio is not installed");
-        }
-
         try
         {
-            // Use browser as fallback for PR (VS support varies)
+            var credentials = _credentialStore.LoadCredentials();
+            var vsExePath = credentials?.VsExePath;
+            var vsArgument = credentials?.VsArgument;
+
+            if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
+            {
+                throw new InvalidOperationException("Visual Studio path is not configured or invalid");
+            }
+
             var prUrl = $"{repositoryUrl}/pullrequest/{pullRequestId}";
-            OpenInBrowser(prUrl);
+            var arguments = string.IsNullOrWhiteSpace(vsArgument) ? prUrl : $"{vsArgument} \"{prUrl}\"";
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = vsExePath,
+                Arguments = arguments,
+                UseShellExecute = false
+            });
         }
         catch (Exception ex)
         {
@@ -108,16 +117,26 @@ public class LauncherService : ILauncherService
 
     public void OpenCodeReviewInVisualStudio(int codeReviewId, string serverUrl)
     {
-        if (!IsVisualStudioInstalled())
-        {
-            throw new InvalidOperationException("Visual Studio is not installed");
-        }
-
         try
         {
-            // Use browser as fallback for code reviews
+            var credentials = _credentialStore.LoadCredentials();
+            var vsExePath = credentials?.VsExePath;
+            var vsArgument = credentials?.VsArgument;
+
+            if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
+            {
+                throw new InvalidOperationException("Visual Studio path is not configured or invalid");
+            }
+
             var reviewUrl = $"{serverUrl}/_workitems/edit/{codeReviewId}";
-            OpenInBrowser(reviewUrl);
+            var arguments = string.IsNullOrWhiteSpace(vsArgument) ? reviewUrl : $"{vsArgument} \"{reviewUrl}\"";
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = vsExePath,
+                Arguments = arguments,
+                UseShellExecute = false
+            });
         }
         catch (Exception ex)
         {
@@ -125,86 +144,5 @@ public class LauncherService : ILauncherService
         }
     }
 
-    public bool IsVisualStudioInstalled()
-    {
-        var vsPath = GetVisualStudioPath();
-        return !string.IsNullOrWhiteSpace(vsPath) && File.Exists(vsPath);
-    }
-
-    public string? GetVisualStudioPath()
-    {
-        if (_cachedVsPath != null)
-            return _cachedVsPath;
-
-        // Try vswhere utility first (recommended method)
-        var vsWherePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-            "Microsoft Visual Studio", "Installer", "vswhere.exe");
-
-        if (File.Exists(vsWherePath))
-        {
-            try
-            {
-                var process = Process.Start(new ProcessStartInfo
-                {
-                    FileName = vsWherePath,
-                    Arguments = "-latest -products * -requires Microsoft.Component.MSBuild -property installationPath",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                });
-
-                if (process != null)
-                {
-                    var output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-
-                    if (!string.IsNullOrWhiteSpace(output))
-                    {
-                        var installPath = output.Trim();
-                        var devEnvPath = Path.Combine(installPath, "Common7", "IDE", "devenv.exe");
-
-                        if (File.Exists(devEnvPath))
-                        {
-                            _cachedVsPath = devEnvPath;
-                            return _cachedVsPath;
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                // Fall through to registry check
-            }
-        }
-
-        // Fallback: Check registry for VS installation (VS 2022 = 17.0 per FR-029)
-        try
-        {
-            using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\SxS\VS7");
-            if (key != null)
-            {
-                // Try VS 2022 (17.0) first per FR-029, then fallback to older versions
-                foreach (var version in new[] { "17.0", "16.0", "15.0" })
-                {
-                    var installPath = key.GetValue(version) as string;
-                    if (!string.IsNullOrWhiteSpace(installPath))
-                    {
-                        var devEnvPath = Path.Combine(installPath, "Common7", "IDE", "devenv.exe");
-                        if (File.Exists(devEnvPath))
-                        {
-                            _cachedVsPath = devEnvPath;
-                            return _cachedVsPath;
-                        }
-                    }
-                }
-            }
-        }
-        catch
-        {
-            // VS not found in registry
-        }
-
-        return null;
-    }
+    // VS detection removed; VS launching relies on user-configured path/argument
 }

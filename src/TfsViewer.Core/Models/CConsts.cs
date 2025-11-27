@@ -24,4 +24,16 @@ public class CConsts
     /// Argument to pass to custom browser before the URL (optional)
     /// </summary>
     public string? BrowserArgument { get; set; }
+
+    /// <summary>
+    /// Optional full path to Visual Studio executable for opening items in VS.
+    /// If not set, VS launch features will be disabled.
+    /// </summary>
+    public string? VsExePath { get; set; }
+
+    /// <summary>
+    /// Optional argument to pass to Visual Studio before the item identifier.
+    /// Example: "-edit" or solution path; the work item/URL will be appended after.
+    /// </summary>
+    public string? VsArgument { get; set; }
 }

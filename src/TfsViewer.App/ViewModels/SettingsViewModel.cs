@@ -31,6 +31,12 @@ public partial class SettingsViewModel : ObservableObject
     private string? _browserArgument;
 
     [ObservableProperty]
+    private string? _vsExePath;
+
+    [ObservableProperty]
+    private string? _vsArgument;
+
+    [ObservableProperty]
     private string? _connectionStatus;
 
     [ObservableProperty]
@@ -64,6 +70,8 @@ public partial class SettingsViewModel : ObservableObject
             UseWindowsAuthentication = credentials.UseWindowsAuthentication;
             BrowserExePath = credentials.BrowserExePath;
             BrowserArgument = credentials.BrowserArgument;
+            VsExePath = credentials.VsExePath;
+            VsArgument = credentials.VsArgument;
         }
         else if (!string.IsNullOrWhiteSpace(_configuration.LastServerUrl))
         {
@@ -93,7 +101,9 @@ public partial class SettingsViewModel : ObservableObject
                 ServerUrl = ServerUrl.Trim(),
                 UseWindowsAuthentication = UseWindowsAuthentication,
                 BrowserExePath = string.IsNullOrWhiteSpace(BrowserExePath) ? null : BrowserExePath.Trim(),
-                BrowserArgument = string.IsNullOrWhiteSpace(BrowserArgument) ? null : BrowserArgument.Trim()
+                BrowserArgument = string.IsNullOrWhiteSpace(BrowserArgument) ? null : BrowserArgument.Trim(),
+                VsExePath = string.IsNullOrWhiteSpace(VsExePath) ? null : VsExePath.Trim(),
+                VsArgument = string.IsNullOrWhiteSpace(VsArgument) ? null : VsArgument.Trim()
             };
 
 
@@ -142,7 +152,9 @@ public partial class SettingsViewModel : ObservableObject
                 ServerUrl = ServerUrl.Trim(),
                 UseWindowsAuthentication = UseWindowsAuthentication,
                 BrowserExePath = string.IsNullOrWhiteSpace(BrowserExePath) ? null : BrowserExePath.Trim(),
-                BrowserArgument = string.IsNullOrWhiteSpace(BrowserArgument) ? null : BrowserArgument.Trim()
+                BrowserArgument = string.IsNullOrWhiteSpace(BrowserArgument) ? null : BrowserArgument.Trim(),
+                VsExePath = string.IsNullOrWhiteSpace(VsExePath) ? null : VsExePath.Trim(),
+                VsArgument = string.IsNullOrWhiteSpace(VsArgument) ? null : VsArgument.Trim()
             };
 
             var result = await _tfsService.ConnectAsync(credentials);
