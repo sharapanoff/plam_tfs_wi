@@ -169,7 +169,7 @@ Based on plan.md structure:
  - [X] T084 [P] [US2] Create PullRequestTabViewModel in src/TfsViewer.App/ViewModels/PullRequestTabViewModel.cs
  - [X] T085 [US2] Implement GetPullRequestsAsync method in TfsService using Git Pull Requests API
  - [X] T086 [US2] Implement LoadPullRequestsAsync command in PullRequestTabViewModel
- - [ ] T087 [US2] Implement cache integration for pull requests with 2-minute TTL in TfsService
+ - [X] T087 [US2] Implement cache integration for pull requests with 2-minute TTL in TfsService
  - [X] T088 [US2] Implement OpenPullRequestInVisualStudio method in LauncherService
  - [X] T089 [US2] Add Pull Requests tab to MainWindow.xaml with DataGrid
  - [X] T090 [US2] Create DataTemplate for PullRequest display (ID, Title, Author, Date, Status)
@@ -199,7 +199,7 @@ Based on plan.md structure:
  - [X] T101 [P] [US3] Create CodeReviewTabViewModel in src/TfsViewer.App/ViewModels/CodeReviewTabViewModel.cs
  - [X] T102 [US3] Implement GetCodeReviewsAsync method in TfsService using TFVC Code Reviews API
  - [X] T103 [US3] Implement LoadCodeReviewsAsync command in CodeReviewTabViewModel
- - [ ] T104 [US3] Implement cache integration for code reviews with 5-minute TTL in TfsService
+ - [X] T104 [US3] Implement cache integration for code reviews with 5-minute TTL in TfsService
  - [X] T105 [US3] Implement OpenCodeReviewInVisualStudio method in LauncherService
  - [X] T106 [US3] Add Code Reviews tab to MainWindow.xaml with DataGrid
  - [X] T107 [US3] Create DataTemplate for CodeReview display (ID, Title, Requester, Date, Status)
@@ -423,12 +423,12 @@ With multiple developers:
 - [ ] T161 Implement VsDetectionErrorDialog with fallback message in src/TfsViewer.App/Views/VsDetectionErrorDialog.xaml (FR-023, SC-005)
 - [ ] T162 Add ReadOnlyAudit script to verify no mutation endpoints invoked (SC-010) in scripts/ReadOnlyAudit.ps1
 - [X] T163 Refactor code references from StoriesTabViewModel to WorkItemsTabViewModel across src/TfsViewer.App/ViewModels/
-- [ ] T164 Standardize cache TTL to 5 minutes for all item types (update pull request TTL from 2m) in src/TfsViewer.Core/Services/TfsService.cs
+ - [X] T164 Standardize cache TTL to 5 minutes for all item types (update pull request TTL from 2m) in src/TfsViewer.Core/Services/TfsService.cs
 - [ ] T165 Add UsabilitySmokeTest for first-run success (SC-011) in tests/Usability/UsabilitySmokeTest.cs
  
- - [ ] T166 [P] Update IsVisualStudioInstalled method in LauncherService to detect VS 2022 specifically via registry key HKLM\SOFTWARE\Microsoft\VisualStudio\17.0 (FR-029)
- - [ ] T167 [P] Add FR-031 verification: Ensure no mutex or single-instance enforcement in App.xaml.cs (allow multiple instances)
- - [ ] T168 Apply Polly retry policy to TfsService.GetPullRequestsAsync with same configuration as T081a (FR-028)
- - [ ] T169 Apply Polly retry policy to TfsService.GetCodeReviewsAsync with same configuration as T081a (FR-028)
+ - [X] T166 [P] Update IsVisualStudioInstalled method in LauncherService to detect VS 2022 specifically via registry key HKLM\SOFTWARE\Microsoft\VisualStudio\17.0 (FR-029)
+ - [X] T167 [P] Add FR-031 verification: Ensure no mutex or single-instance enforcement in App.xaml.cs (allow multiple instances)
+ - [X] T168 Apply Polly retry policy to TfsService.GetPullRequestsAsync with same configuration as T081a (FR-028)
+ - [X] T169 Apply Polly retry policy to TfsService.GetCodeReviewsAsync with same configuration as T081a (FR-028)
  - [ ] T170 Add LoggingService integration to PullRequestTabViewModel for error logging (FR-030)
  - [ ] T171 Add LoggingService integration to CodeReviewTabViewModel for error logging (FR-030)

@@ -214,8 +214,16 @@ public class TfsService : ITfsService, IDisposable
         }
     }
 
-    public Task<IEnumerable<PullRequest>> GetPullRequestsAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<PullRequest>> GetPullRequestsAsync(CancellationToken cancellationToken = default)
     {
+        const string cacheKey = "assigned_pull_requests";
+
+        // Check cache first (5-minute TTL)
+        if (_cacheService.TryGet<List<PullRequest>>(cacheKey, out var cachedItems) && cachedItems != null)
+        {
+            return cachedItems;
+        }
+
         if (!IsConnected)
         {
             throw new TfsServiceException("Not connected to TFS server") { Operation = "GetPullRequests" };
@@ -232,7 +240,7 @@ public class TfsService : ITfsService, IDisposable
 
             // Enumerate repositories and collect PRs where current user is a reviewer
             var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
-            return retry.ExecuteAsync(async ct =>
+            var result = await retry.ExecuteAsync(async ct =>
             {
                 var prs = new List<PullRequest>();
                 var repos = await gitClient.GetRepositoriesAsync(cancellationToken: ct);
@@ -252,15 +260,24 @@ public class TfsService : ITfsService, IDisposable
                                 Id = pr.PullRequestId,
                                 Title = pr.Title ?? string.Empty,
                                 CreatedBy = pr.CreatedBy?.DisplayName ?? string.Empty,
+                                Repository = repo.Name ?? string.Empty,
+                                SourceBranch = pr.SourceRefName ?? string.Empty,
+                                TargetBranch = pr.TargetRefName ?? string.Empty,
                                 CreatedDate = pr.CreationDate,
                                 Status = pr.Status.ToString(),
-                                Url = pr.Url ?? string.Empty
+                                Url = pr.Url ?? string.Empty,
+                                IsDraft = pr.IsDraft ?? false
                             });
                         }
                     }
                 }
-                return (IEnumerable<PullRequest>)prs;
+                return prs;
             }, cancellationToken);
+
+            // Cache for 5 minutes
+            _cacheService.Set(cacheKey, result, TimeSpan.FromMinutes(5));
+
+            return result;
         }
         catch (Exception ex) when (ex is not TfsServiceException)
         {
@@ -273,8 +290,16 @@ public class TfsService : ITfsService, IDisposable
         }
     }
 
-    public Task<IEnumerable<CodeReview>> GetCodeReviewsAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<CodeReview>> GetCodeReviewsAsync(CancellationToken cancellationToken = default)
     {
+        const string cacheKey = "assigned_code_reviews";
+
+        // Check cache first (5-minute TTL)
+        if (_cacheService.TryGet<List<CodeReview>>(cacheKey, out var cachedItems) && cachedItems != null)
+        {
+            return cachedItems;
+        }
+
         if (!IsConnected)
         {
             throw new TfsServiceException("Not connected to TFS server") { Operation = "GetCodeReviews" };
@@ -286,11 +311,13 @@ public class TfsService : ITfsService, IDisposable
             if (tfvcClient == null)
             {
                 // Some TFS instances may not support TFVC code reviews; return empty gracefully
-                return Task.FromResult(Enumerable.Empty<CodeReview>());
+                var emptyList = new List<CodeReview>();
+                _cacheService.Set(cacheKey, emptyList, TimeSpan.FromMinutes(5));
+                return emptyList;
             }
 
             var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
-            return retry.ExecuteAsync(async ct =>
+            var result = await retry.ExecuteAsync(async ct =>
             {
                 var reviews = new List<CodeReview>();
                 // TFVC code review APIs are limited; using changesets as placeholder for demonstration
@@ -308,8 +335,13 @@ public class TfsService : ITfsService, IDisposable
                         Url = cs.Url ?? string.Empty
                     });
                 }
-                return (IEnumerable<CodeReview>)reviews;
+                return reviews;
             }, cancellationToken);
+
+            // Cache for 5 minutes
+            _cacheService.Set(cacheKey, result, TimeSpan.FromMinutes(5));
+
+            return result;
         }
         catch (Exception ex) when (ex is not TfsServiceException)
         {

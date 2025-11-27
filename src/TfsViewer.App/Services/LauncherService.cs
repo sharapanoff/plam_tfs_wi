@@ -150,13 +150,13 @@ public class LauncherService : ILauncherService
             }
         }
 
-        // Fallback: Check registry for VS installation
+        // Fallback: Check registry for VS installation (VS 2022 = 17.0 per FR-029)
         try
         {
             using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\SxS\VS7");
             if (key != null)
             {
-                // Try recent versions
+                // Try VS 2022 (17.0) first per FR-029, then fallback to older versions
                 foreach (var version in new[] { "17.0", "16.0", "15.0" })
                 {
                     var installPath = key.GetValue(version) as string;
