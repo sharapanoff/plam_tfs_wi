@@ -433,3 +433,4 @@ With multiple developers:
  - [X] T170 Add LoggingService integration to PullRequestTabViewModel for error logging (FR-030)
  - [X] T171 Add LoggingService integration to CodeReviewTabViewModel for error logging (FR-030)
  - [X] T172 **BUG**: Filter out work items of type "DevNotes" and "Code Review" from GetAssignedWorkItemsAsync WIQL query in src/TfsViewer.Core/Services/TfsService.cs
+ - [X] T173 **BUG**: Fix GetCodeReviewsAsync to load all work items with Type='Code Review Response' instead of current incorrect implementation in src/TfsViewer.Core/Services/TfsService.cs

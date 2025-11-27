@@ -309,36 +309,50 @@ public class TfsService : ITfsService, IDisposable
 
         try
         {
-            var tfvcClient = _apiClient?.GetTfvcClient();
-            if (tfvcClient == null)
+            var witClient = _apiClient?.GetWorkItemClient();
+            if (witClient == null)
             {
-                // Some TFS instances may not support TFVC code reviews; return empty gracefully
+                throw new TfsServiceException("Work item client not available") { Operation = "GetCodeReviews" };
+            }
+
+            // WIQL query to get all work items with Type='Code Review Response' assigned to current user
+            var query = $@"
+                SELECT [System.Id], [System.Title], [System.WorkItemType], [System.State], 
+                       [System.AssignedTo], [System.CreatedDate], [System.ChangedDate]
+                FROM WorkItems
+                WHERE [System.WorkItemType] = 'Code Review Response'
+                  AND [System.AssignedTo] = @Me
+                ORDER BY [System.ChangedDate] DESC";
+
+            var wiql = new Wiql { Query = query };
+            var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
+            var queryResult = await retry.ExecuteAsync(ct => witClient.QueryByWiqlAsync(wiql, cancellationToken: ct), cancellationToken);
+
+            if (queryResult.WorkItems == null || !queryResult.WorkItems.Any())
+            {
                 var emptyList = new List<CodeReview>();
                 _cacheService.Set(cacheKey, emptyList, TimeSpan.FromMinutes(5));
                 return emptyList;
             }
 
-            var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
-            var result = await retry.ExecuteAsync(async ct =>
+            var ids = queryResult.WorkItems.Select(wi => wi.Id).ToArray();
+            var fields = new[] 
+            { 
+                "System.Id", "System.Title", "System.WorkItemType", "System.State",
+                "System.AssignedTo", "System.CreatedDate", "System.ChangedDate"
+            };
+
+            var tfsWorkItems = await retry.ExecuteAsync(ct => witClient.GetWorkItemsAsync(ids, fields, cancellationToken: ct), cancellationToken);
+
+            var result = tfsWorkItems.Select(wi => new CodeReview
             {
-                var reviews = new List<CodeReview>();
-                // TFVC code review APIs are limited; using changesets as placeholder for demonstration
-                var changesets = await tfvcClient.GetChangesetsAsync(top: 50, cancellationToken: ct);
-                foreach (var cs in changesets)
-                {
-                    // Placeholder mapping; real implementation would use Code Review work item type
-                    reviews.Add(new CodeReview
-                    {
-                        Id = cs.ChangesetId,
-                        Title = cs.Comment ?? $"Changeset {cs.ChangesetId}",
-                        RequestedBy = cs.Author?.DisplayName ?? string.Empty,
-                        CreatedDate = cs.CreatedDate,
-                        Status = "Pending",
-                        Url = cs.Url ?? string.Empty
-                    });
-                }
-                return reviews;
-            }, cancellationToken);
+                Id = wi.Id ?? 0,
+                Title = wi.Fields.ContainsKey("System.Title") ? wi.Fields["System.Title"]?.ToString() ?? string.Empty : string.Empty,
+                RequestedBy = wi.Fields.ContainsKey("System.AssignedTo") ? wi.Fields["System.AssignedTo"]?.ToString() ?? string.Empty : string.Empty,
+                CreatedDate = wi.Fields.ContainsKey("System.CreatedDate") ? wi.Fields["System.CreatedDate"] as DateTime? ?? DateTime.MinValue : DateTime.MinValue,
+                Status = wi.Fields.ContainsKey("System.State") ? wi.Fields["System.State"]?.ToString() ?? string.Empty : string.Empty,
+                Url = wi.Url ?? string.Empty
+            }).ToList();
 
             // Cache for 5 minutes
             _cacheService.Set(cacheKey, result, TimeSpan.FromMinutes(5));
