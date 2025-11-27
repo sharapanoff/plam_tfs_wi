@@ -161,6 +161,7 @@ public class TfsService : ITfsService, IDisposable
                 WHERE [System.AssignedTo] = @Me
                   AND [System.WorkItemType] <> 'DevNotes'
                   AND [System.WorkItemType] <> 'Code Review Response'
+                  AND [System.WorkItemType] <> 'Code Review Request'
                 ORDER BY [System.ChangedDate] DESC";
 
             var wiql = new Wiql { Query = query };
@@ -197,7 +198,8 @@ public class TfsService : ITfsService, IDisposable
                 Priority = wi.Fields.ContainsKey("System.Priority") ? wi.Fields["System.Priority"]?.ToString() ?? string.Empty : string.Empty,
                 AreaPath = wi.Fields.ContainsKey("System.AreaPath") ? wi.Fields["System.AreaPath"]?.ToString() ?? string.Empty : string.Empty,
                 IterationPath = wi.Fields.ContainsKey("System.IterationPath") ? wi.Fields["System.IterationPath"]?.ToString() ?? string.Empty : string.Empty,
-                Url = wi.Url ?? string.Empty
+                // Construct proper TFS web UI URL instead of using API URL
+                Url = $"{_credentials?.ServerUrl}/_workitems/edit/{wi.Id ?? 0}"
             }).ToList();
 
             // Cache for 5 minutes
@@ -257,6 +259,11 @@ public class TfsService : ITfsService, IDisposable
                     {
                         if (pr.Reviewers != null && pr.Reviewers.Any(r => string.Equals(r.DisplayName, _currentUser, StringComparison.OrdinalIgnoreCase)))
                         {
+                            // Construct proper TFS web UI URL for pull request
+                            var projectName = repo.ProjectReference?.Name ?? "DefaultCollection";
+                            var repoName = repo.Name ?? string.Empty;
+                            var prUrl = $"{_credentials?.ServerUrl}/{projectName}/_git/{repoName}/pullrequest/{pr.PullRequestId}";
+                            
                             prs.Add(new PullRequest
                             {
                                 Id = pr.PullRequestId,
@@ -267,7 +274,7 @@ public class TfsService : ITfsService, IDisposable
                                 TargetBranch = pr.TargetRefName ?? string.Empty,
                                 CreatedDate = pr.CreationDate,
                                 Status = pr.Status.ToString(),
-                                Url = pr.Url ?? string.Empty,
+                                Url = prUrl,
                                 IsDraft = pr.IsDraft ?? false
                             });
                         }
@@ -351,7 +358,8 @@ public class TfsService : ITfsService, IDisposable
                 RequestedBy = wi.Fields.ContainsKey("System.AssignedTo") ? wi.Fields["System.AssignedTo"]?.ToString() ?? string.Empty : string.Empty,
                 CreatedDate = wi.Fields.ContainsKey("System.CreatedDate") ? wi.Fields["System.CreatedDate"] as DateTime? ?? DateTime.MinValue : DateTime.MinValue,
                 Status = wi.Fields.ContainsKey("System.State") ? wi.Fields["System.State"]?.ToString() ?? string.Empty : string.Empty,
-                Url = wi.Url ?? string.Empty
+                // Construct proper TFS web UI URL instead of using API URL
+                Url = $"{_credentials?.ServerUrl}/_workitems/edit/{wi.Id ?? 0}"
             }).ToList();
 
             // Cache for 5 minutes

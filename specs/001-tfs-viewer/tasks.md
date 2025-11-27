@@ -437,3 +437,4 @@ With multiple developers:
  - [X] T174 **FEATURE**: Add BrowserTarget setting to SettingsWindow to allow custom browser executable path instead of using default browser for OpenInBrowser functionality in src/TfsViewer.App/Views/SettingsWindow.xaml and src/TfsViewer.Core/Models/TfsCredentials.cs
  - [X] T175 **FEATURE**: Update LauncherService.OpenInBrowser to use BrowserTarget setting if configured, otherwise fall back to default browser in src/TfsViewer.App/Services/LauncherService.cs
  - [X] T176 **BUG**: BrowserTarget should support two components: path to exe and argument; url should be appended after the argument (update TfsCredentials, SettingsWindow, SettingsViewModel, LauncherService)
+ - [X] T177 **BUG**: Work items opened in browser show JSON instead of standard TFS UI - fix URL construction in LauncherService to use proper TFS web UI URL format in src/TfsViewer.Core/Services/TfsService.cs

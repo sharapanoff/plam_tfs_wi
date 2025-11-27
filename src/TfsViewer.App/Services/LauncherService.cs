@@ -33,7 +33,7 @@ public class LauncherService : ILauncherService
                 // Use custom browser with optional argument
                 var arguments = string.IsNullOrWhiteSpace(browserArgument) 
                     ? url 
-                    : $"{browserArgument} {url}";
+                    : $"{browserArgument} \"{url}\"";
                 
                 Process.Start(new ProcessStartInfo
                 {
