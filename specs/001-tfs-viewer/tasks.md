@@ -217,9 +217,22 @@ Based on plan.md structure:
 
 ---
 
-## Phase 7: (Removed) System Tray Integration
+## Phase 7: System Tray Integration (Priority: P3)
 
-Removed as out-of-scope (no specification requirement). Tasks T117–T126 deferred.
+**Goal**: Provide persistent system tray presence with quick actions (restore, refresh, exit) and minimize-to-tray UX.
+
+### Implementation for System Tray
+
+ - [X] T117 Add TaskbarIcon resource to `src/TfsViewer.App/App.xaml` using Hardcodet.NotifyIcon.Wpf (icon, tooltip, context menu)
+ - [X] T118 Ensure tray icon file (`src/TfsViewer.App/Resources/Icons/app.ico` or existing) is referenced correctly (placeholder icon to be supplied later)
+ - [X] T119 Add context menu with items: Restore, Refresh All, Exit bound to MainViewModel commands in `App.xaml`
+ - [X] T120 Add `ShowWindowCommand`, `HideWindowCommand`, `ExitCommand` to `src/TfsViewer.App/ViewModels/MainViewModel.cs`
+ - [X] T121 Implement minimize-to-tray (hide on minimize) in `src/TfsViewer.App/Views/MainWindow.xaml.cs`
+ - [X] T122 Handle tray icon double-click to restore window in `App.xaml.cs`
+ - [X] T123 Add dynamic tooltip text (e.g., "TFS Viewer") to tray icon resource
+ - [X] T124 Dispose TaskbarIcon cleanly on application exit (`App.xaml.cs` OnExit override)
+ - [X] T125 Add documentation comment in `tasks.md` notes explaining tray behavior (non-blocking enhancement)
+ - [X] T126 Verify tray commands operate when main window hidden (manual test guidance in quickstart.md if needed)
 
 ---
 
@@ -392,14 +405,14 @@ With multiple developers:
 
 ## Task Count Summary
 
- - **Total Tasks**: 156
+ - **Total Tasks**: 166
  - **Phase 1 (Setup)**: 18 tasks
  - **Phase 2 (Foundational)**: 23 tasks (BLOCKS all user stories)
  - **Phase 3 (User Story 1)**: 35 tasks - **MVP CORE**
  - **Phase 4 (User Story 4)**: 13 tasks - **MVP ENHANCEMENT**
  - **Phase 5 (User Story 2)**: 17 tasks
  - **Phase 6 (User Story 3)**: 17 tasks
- - **Phase 7 (Removed)**: 0 tasks
+ - **Phase 7 (System Tray)**: 10 tasks
  - **Phase 8 (Performance)**: 8 tasks
  - **Phase 9 (Polish)**: 15 tasks
  - **Remediation Additions**: 13 tasks

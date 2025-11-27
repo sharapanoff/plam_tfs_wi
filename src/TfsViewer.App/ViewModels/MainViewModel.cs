@@ -180,4 +180,30 @@ public partial class MainViewModel : ObservableObject
             RefreshCommand.NotifyCanExecuteChanged();
         }
     }
+
+    // Tray commands
+    [RelayCommand]
+    private void ShowWindow()
+    {
+        var win = Application.Current?.MainWindow;
+        if (win != null)
+        {
+            win.Show();
+            win.WindowState = WindowState.Normal;
+            win.Activate();
+        }
+    }
+
+    [RelayCommand]
+    private void HideWindow()
+    {
+        var win = Application.Current?.MainWindow;
+        win?.Hide();
+    }
+
+    [RelayCommand]
+    private void Exit()
+    {
+        Application.Current?.Shutdown();
+    }
 }

@@ -8,6 +8,7 @@ using TfsViewer.Core.Contracts;
 using TfsViewer.Core.Services;
 using TfsViewer.Core.Infrastructure;
 using TfsViewer.Core.Api;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace TfsViewer.App;
 
@@ -37,6 +38,18 @@ public partial class App : Application
 
         // Initialize async (load credentials and data)
         _ = mainViewModel.InitializeAsync();
+
+        // Configure tray icon
+        if (TryFindResource("TrayIcon") is TaskbarIcon trayIcon)
+        {
+            trayIcon.DataContext = mainViewModel;
+            trayIcon.TrayMouseDoubleClick += (s, args) =>
+            {
+                mainWindow.Show();
+                mainWindow.WindowState = WindowState.Normal;
+                mainWindow.Activate();
+            };
+        }
     }
 
     private void ConfigureServices(IServiceCollection services)
@@ -89,6 +102,10 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        if (TryFindResource("TrayIcon") is TaskbarIcon trayIcon)
+        {
+            trayIcon.Dispose();
+        }
         _serviceProvider?.Dispose();
         base.OnExit(e);
     }
