@@ -12,6 +12,7 @@ using TfsViewer.Core.Api;
 using Hardcodet.Wpf.TaskbarNotification;
 using System.Drawing;
 using System.IO;
+using TfsViewer.App.Models;
 
 namespace TfsViewer.App;
 
@@ -23,110 +24,86 @@ public partial class App : Application
     private ServiceProvider? _serviceProvider;
 
     protected override void OnStartup(StartupEventArgs e)
-    {
-        base.OnStartup(e);
+	{
+		base.OnStartup(e);
 
-        // Configure dependency injection
-        var services = new ServiceCollection();
-        ConfigureServices(services);
-        _serviceProvider = services.BuildServiceProvider();
+		// Configure dependency injection
+		var services = new ServiceCollection();
+		ConfigureServices(services);
+		_serviceProvider = services.BuildServiceProvider();
 
-        // Show main window
-        var mainWindow = new MainWindow();
-        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainWindow.DataContext = mainViewModel;
-        
-        MainWindow = mainWindow;
-        mainWindow.Show();
+		// Show main window
+		var mainWindow = new MainWindow();
+		var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+		mainWindow.DataContext = mainViewModel;
 
-        // Initialize async (load credentials and data)
-        _ = mainViewModel.InitializeAsync();
+		base.MainWindow = mainWindow;
+		mainWindow.Show();
 
-        // Configure tray icon
-        if (TryFindResource("TrayIcon") is TaskbarIcon trayIcon)
-        {
-            trayIcon.DataContext = mainViewModel;
-            trayIcon.TrayMouseDoubleClick += (s, args) =>
-            {
-                mainWindow.Show();
-                mainWindow.WindowState = WindowState.Normal;
-                mainWindow.Activate();
-            };
+		_ = mainViewModel.InitializeAsync();
 
-            // Attempt to load real icon from resources; fallback to generated icon
-            try
-            {
-                var iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Icons", "app.ico");
-                if (File.Exists(iconPath))
-                {
-                    using var fs = File.OpenRead(iconPath);
-                    trayIcon.Icon = new Icon(fs);
-                }
-                else
-                {
-                    trayIcon.Icon = CreateFallbackIcon();
-                }
-            }
-            catch
-            {
-                trayIcon.Icon = CreateFallbackIcon();
-            }
-        }
-    }
+		ConfigureTrayIcon(mainWindow, mainViewModel);
+	}
 
-    private void ConfigureServices(IServiceCollection services)
+	private void ConfigureTrayIcon(MainWindow mainWindow, MainViewModel mainViewModel)
+	{
+		// Configure tray icon
+		if(TryFindResource("TrayIcon") is TaskbarIcon trayIcon)
+		{
+			trayIcon.DataContext = mainViewModel;
+			trayIcon.TrayMouseDoubleClick += (s, args) =>
+			{
+				mainWindow.Show();
+				mainWindow.WindowState = WindowState.Normal;
+				mainWindow.Activate();
+			};
+
+			// Attempt to load real icon from resources; fallback to generated icon
+			try
+			{
+				var iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Icons", "app.ico");
+				if(File.Exists(iconPath))
+				{
+					using var fs = File.OpenRead(iconPath);
+					trayIcon.Icon = new Icon(fs);
+				}
+				else
+				{
+					trayIcon.Icon = CreateFallbackIcon();
+				}
+			}
+			catch
+			{
+				trayIcon.Icon = CreateFallbackIcon();
+			}
+		}
+	}
+
+	private void ConfigureServices(IServiceCollection services)
     {
         // Core services
         services.AddSingleton<ICacheService, CacheService>();
-        services.AddSingleton<ICredentialStore, CredentialStore>();
+        services.AddSingleton<IConfigStore, ConfigStore>();
         services.AddSingleton<ILoggingService, LoggingService>();
-        services.AddSingleton<ITfsService>(sp =>
-        {
-            var cache = sp.GetRequiredService<ICacheService>();
-            var log = sp.GetService<ILoggingService>();
-            return new TfsService(cache, log);
-        });
-        services.AddTransient<TfsApiClient>();
 
-        // App services
-        services.AddSingleton<IAppConfiguration>(sp =>
-        {
-            var config = new AppConfiguration();
-            config.Load();
-            return config;
-        });
-        services.AddSingleton<ICoreConfiguration>(sp => (AppConfiguration)sp.GetRequiredService<IAppConfiguration>());
         services.AddSingleton<ILauncherService, LauncherService>();
+        services.AddSingleton<ITfsService, TfsService>();
 
+
+        // App config
+        services.AddSingleton<AppConfiguration>(sp => sp.GetRequiredService<IConfigStore>().Load());
+        services.AddSingleton<IAppConfiguration>(sp => sp.GetRequiredService<AppConfiguration>());
+        services.AddSingleton<IBrowserConfiguration>(sp => sp.GetRequiredService<AppConfiguration>());
+        services.AddSingleton<IVsConfiguration>(sp => sp.GetRequiredService<AppConfiguration>());
+        services.AddSingleton<ITfsConfiguration>(sp => sp.GetRequiredService<AppConfiguration>());
+        
 
         // ViewModels
         services.AddSingleton<WorkItemsTabViewModel>();
-        services.AddSingleton<PullRequestTabViewModel>(sp =>
-        {
-            var tfs = sp.GetRequiredService<ITfsService>();
-            var launcher = sp.GetRequiredService<ILauncherService>();
-            var logging = sp.GetService<ILoggingService>();
-            return new PullRequestTabViewModel(tfs, launcher, logging);
-        });
-        services.AddSingleton<CodeReviewTabViewModel>(sp =>
-        {
-            var tfs = sp.GetRequiredService<ITfsService>();
-            var launcher = sp.GetRequiredService<ILauncherService>();
-            var logging = sp.GetService<ILoggingService>();
-            return new CodeReviewTabViewModel(tfs, launcher, logging);
-        });
-        services.AddSingleton<MainViewModel>(sp =>
-        {
-            return new MainViewModel(
-                sp.GetRequiredService<ITfsService>(),
-                sp.GetRequiredService<ICredentialStore>(),
-                sp.GetRequiredService<IAppConfiguration>(),
-                sp.GetRequiredService<ICacheService>(),
-                sp.GetRequiredService<WorkItemsTabViewModel>(),
-                sp.GetRequiredService<PullRequestTabViewModel>(),
-                sp.GetRequiredService<CodeReviewTabViewModel>()
-            );
-        });
+        services.AddSingleton<PullRequestTabViewModel>();
+        services.AddSingleton<CodeReviewTabViewModel>();
+        services.AddSingleton<MainViewModel>();
+        
     }
 
     protected override void OnExit(ExitEventArgs e)

@@ -3,7 +3,7 @@ namespace TfsViewer.Core.Contracts;
 /// <summary>
 /// Represents TFS authentication credentials
 /// </summary>
-public interface IConstsTFS
+public interface ITfsConfiguration
 {
     public string ServerUrl { get; set; }
     

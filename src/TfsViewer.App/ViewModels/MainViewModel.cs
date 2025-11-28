@@ -1,10 +1,12 @@
 using System.Windows;
 using System.Windows.Threading;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+
 using TfsViewer.App.Contracts;
+using TfsViewer.App.Models;
 using TfsViewer.App.Views;
-using TfsViewer.App.Infrastructure;
 using TfsViewer.Core.Contracts;
 
 
@@ -15,10 +17,12 @@ namespace TfsViewer.App.ViewModels;
 /// </summary>
 public partial class MainViewModel : ObservableObject
 {
-    private readonly ITfsService _tfsService;
-    private readonly ICredentialStore _credentialStore;
-    private readonly IAppConfiguration _configuration;
     private readonly ICacheService _cacheService;
+    private readonly ITfsService _tfsService;
+    private readonly IConfigStore configStore;
+
+    private readonly AppConfiguration configuration;
+    
     private readonly DispatcherTimer _autoRefreshTimer;
 
     [ObservableProperty]
@@ -44,16 +48,16 @@ public partial class MainViewModel : ObservableObject
 
     public MainViewModel(
         ITfsService tfsService,
-        ICredentialStore credentialStore,
-        IAppConfiguration configuration,
+        IConfigStore configStore,
+        AppConfiguration configuration,
         ICacheService cacheService,
         WorkItemsTabViewModel workItemsTab,
         PullRequestTabViewModel? pullRequestsTab = null,
         CodeReviewTabViewModel? codeReviewsTab = null)
     {
         _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
-        _credentialStore = credentialStore ?? throw new ArgumentNullException(nameof(credentialStore));
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        this.configStore = configStore ?? throw new ArgumentNullException(nameof(configStore));
+        this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
         _workItemsTab = workItemsTab ?? throw new ArgumentNullException(nameof(workItemsTab));
         _pullRequestsTab = pullRequestsTab;
@@ -69,26 +73,24 @@ public partial class MainViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        // Check if credentials exist
-        if (!_credentialStore.HasStoredCredentials())
+        if (!configStore.HasStoredConfiguration())
         {
             ShowSettingsWindow();
             return;
         }
 
-        // Try to connect with saved credentials
-        var credentials = _credentialStore.LoadCredentials();
-        if (credentials != null)
+        if (configuration.isValid)
         {
-            var result = await _tfsService.ConnectAsync(credentials);
+            var result = await _tfsService.ConnectAsync(configuration);
             
             if (result.Success)
             {
                 StatusMessage = $"Connected as {result.AuthenticatedUser}";
                 await LoadDataAsync();
-                
+
                 // Start auto-refresh timer if enabled
-                if (_configuration.AutoRefreshEnabled)
+
+                if(this.configuration.AutoRefreshEnabled)
                 {
                     _autoRefreshTimer.Start();
                 }
@@ -144,8 +146,8 @@ public partial class MainViewModel : ObservableObject
         var settingsWindow = new SettingsWindow();
         var settingsViewModel = new SettingsViewModel(
             _tfsService,
-            _credentialStore,
-            _configuration,
+            configStore,
+            this.configuration,
             settingsWindow);
 
         settingsWindow.DataContext = settingsViewModel;
@@ -154,7 +156,7 @@ public partial class MainViewModel : ObservableObject
 
         if (result == true && settingsViewModel.ConnectionSuccessful)
         {
-            StatusMessage = $"Connected to {_configuration.LastServerUrl}";
+            StatusMessage = $"Connected to {this.configuration.ServerUrl}";
             //_ = LoadDataAsync();
         }
     }

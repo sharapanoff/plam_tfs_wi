@@ -1,9 +1,15 @@
+using TfsViewer.Core.Contracts;
+
 namespace TfsViewer.App.Contracts;
 
 /// <summary>
-/// Interface for application configuration used in TfsViewer.App
+/// Interface for application-specific configuration settings
 /// </summary>
-public interface IAppConfiguration
+public interface IAppConfiguration:
+    ITfsConfiguration, 
+    IBrowserConfiguration, 
+    IVsConfiguration
+
 {
     /// <summary>
     /// Gets or sets the last used server URL
@@ -25,38 +31,5 @@ public interface IAppConfiguration
     /// </summary>
     string? LastProject { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether to use Windows authentication
-    /// </summary>
-    bool UseWindowsAuthentication { get; set; }
-
-    /// <summary>
-    /// Gets or sets the custom browser executable path (optional)
-    /// </summary>
-    string? BrowserExePath { get; set; }
-
-    /// <summary>
-    /// Gets or sets the browser argument (optional)
-    /// </summary>
-    string? BrowserArgument { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Visual Studio executable path (optional)
-    /// </summary>
-    string? VsExePath { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Visual Studio argument (optional)
-    /// </summary>
-    string? VsArgument { get; set; }
-
-    /// <summary>
-    /// Loads configuration from storage
-    /// </summary>
-    void Load();
-
-    /// <summary>
-    /// Saves configuration to storage
-    /// </summary>
-    void Save();
+    public bool isValid { get; set; }
 }

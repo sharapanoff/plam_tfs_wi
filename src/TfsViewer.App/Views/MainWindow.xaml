@@ -173,7 +173,6 @@
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
                                                     ToolTip="Open work item in Visual Studio"
-                                                    Visibility="{Binding DataContext.IsVisualStudioInstalled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"
                                                     Padding="10,4"/>
                                         </StackPanel>
                                     </DataTemplate>

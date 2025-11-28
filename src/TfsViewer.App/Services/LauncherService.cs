@@ -3,6 +3,8 @@ using System.IO;
 
 using Microsoft.Win32;
 
+using TfsViewer.App.Contracts;
+using TfsViewer.Core.Contracts;
 using TfsViewer.Core.Models;
 
 namespace TfsViewer.App.Services;
@@ -12,11 +14,19 @@ namespace TfsViewer.App.Services;
 /// </summary>
 public class LauncherService : ILauncherService
 {
-    private readonly TfsViewer.Core.Contracts.ICredentialStore _credentialStore;
+    private readonly IBrowserConfiguration browserConfiguration;
+    private readonly IVsConfiguration visualStudioConfiguration;
+    private readonly ITfsConfiguration tfsConfiguration;
 
-    public LauncherService(TfsViewer.Core.Contracts.ICredentialStore credentialStore)
+    public LauncherService(
+        IBrowserConfiguration browserConfiguration,
+        IVsConfiguration visualStudioConfiguration,
+        ITfsConfiguration tfsConfiguration 
+        )
     {
-        _credentialStore = credentialStore ?? throw new ArgumentNullException(nameof(credentialStore));
+        this.browserConfiguration = browserConfiguration ?? throw new ArgumentNullException(nameof(browserConfiguration));
+        this.visualStudioConfiguration = visualStudioConfiguration ?? throw new ArgumentNullException(nameof(visualStudioConfiguration));
+        this.tfsConfiguration = tfsConfiguration ?? throw new ArgumentNullException(nameof(tfsConfiguration));
     }
 
     public void OpenInBrowser(string url)
@@ -26,9 +36,8 @@ public class LauncherService : ILauncherService
 
         try
         {
-            var credentials = _credentialStore.LoadCredentials();
-            var browserExePath = credentials?.BrowserExePath;
-            var browserArgument = credentials?.BrowserArgument;
+            var browserExePath = browserConfiguration?.BrowserExePath;
+            var browserArgument = browserConfiguration?.BrowserArgument;
 
             if (!string.IsNullOrWhiteSpace(browserExePath) && File.Exists(browserExePath))
             {
@@ -64,9 +73,8 @@ public class LauncherService : ILauncherService
     {
         try
         {
-            var credentials = _credentialStore.LoadCredentials();
-            var vsExePath = credentials?.VsExePath;
-            var vsArgument = credentials?.VsArgument;
+            var vsExePath = visualStudioConfiguration?.VsExePath;
+            var vsArgument = visualStudioConfiguration?.VsArgument;
 
             if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
             {
@@ -75,7 +83,7 @@ public class LauncherService : ILauncherService
 
             var workItemUrl = 
                 "";
-                //$" /TfsLink \"vstfs:///WorkItemTracking/WorkItem/{workItemId}?url={credentials?.ServerUrl}\"";
+                //$" /TfsLink \"vstfs:///WorkItemTracking/WorkItem/{workItemId}?url={visualStudioConfiguration?.ServerUrl}\"";
                 //$"{serverUrl}/_workitems/edit/{workItemId}";
             var arguments = string.IsNullOrWhiteSpace(vsArgument) ? workItemUrl : $"{vsArgument} \"{workItemUrl}\"";
 
@@ -96,9 +104,8 @@ public class LauncherService : ILauncherService
     {
         try
         {
-            var credentials = _credentialStore.LoadCredentials();
-            var vsExePath = credentials?.VsExePath;
-            var vsArgument = credentials?.VsArgument;
+            var vsExePath = visualStudioConfiguration?.VsExePath;
+            var vsArgument = visualStudioConfiguration?.VsArgument;
 
             if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
             {
@@ -125,9 +132,8 @@ public class LauncherService : ILauncherService
     {
         try
         {
-            var credentials = _credentialStore.LoadCredentials();
-            var vsExePath = credentials?.VsExePath;
-            var vsArgument = credentials?.VsArgument;
+            var vsExePath = visualStudioConfiguration?.VsExePath;
+            var vsArgument = visualStudioConfiguration?.VsArgument;
 
             if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
             {
@@ -135,7 +141,7 @@ public class LauncherService : ILauncherService
             }
 
             var reviewUrl = 
-                $" /TfsLink \"vstfs:///CodeReview/CodeReviewID/{codeReviewId}?url={credentials?.ServerUrl}\"";
+                $" /TfsLink \"vstfs:///CodeReview/CodeReviewID/{codeReviewId}?url={tfsConfiguration?.ServerUrl}\"";
                 //$"vstfs:///CodeReview/ReviewId/{codeReviewId}";
                 // $"{serverUrl}/_workitems/edit/{codeReviewId}";
             var arguments = string.IsNullOrWhiteSpace(vsArgument) ? reviewUrl : $"{vsArgument} \"{reviewUrl}\"";
