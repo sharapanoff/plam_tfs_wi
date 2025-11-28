@@ -1,0 +1,25 @@
+﻿TFS Viewer Read-Only Audit Report
+==================================
+
+Generated: 11/28/2025 10:14:47
+Source Path: .
+
+SUMMARY
+-------
+Total Files Analyzed: 44
+Compliant Files: 44
+Files with Violations: 0
+Total Violations: 0
+
+OVERALL STATUS: PASS - Application is read-only
+
+DETAILS
+-------
+
+COMPLIANT ENDPOINTS FOUND:
+  - GET.*codereviews
+  - GET.*codeReviews
+  - GET.*pullrequests
+  - GET.*pullRequests
+  - GET.*workitems
+

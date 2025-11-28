@@ -85,8 +85,21 @@ public partial class PullRequestTabViewModel : ObservableObject
     {
         if (pr != null)
         {
-            // Pass the PR web URL as repository context for launcher fallback
-            _launcherService.OpenPullRequestInVisualStudio(pr.Id, pr.Url);
+            try
+            {
+                // Pass the PR web URL as repository context for launcher fallback
+                _launcherService.OpenPullRequestInVisualStudio(pr.Id, pr.Url);
+            }
+            catch (InvalidOperationException)
+            {
+                // Show VS detection error dialog
+                var dialog = new Views.VsDetectionErrorDialog();
+                dialog.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open in Visual Studio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 

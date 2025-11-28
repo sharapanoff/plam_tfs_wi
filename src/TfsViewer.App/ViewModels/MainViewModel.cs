@@ -18,7 +18,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ICredentialStore _credentialStore;
     private readonly Configuration _configuration;
     private readonly ICacheService _cacheService;
-    private readonly ILauncherService _launcherService;
+    private readonly ILauncherService? _launcherService;
     private readonly DispatcherTimer _autoRefreshTimer;
 
     [ObservableProperty]

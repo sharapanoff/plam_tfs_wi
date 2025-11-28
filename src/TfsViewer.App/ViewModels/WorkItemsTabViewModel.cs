@@ -94,8 +94,21 @@ public partial class WorkItemsTabViewModel : ObservableObject
     {
         if (workItem != null && _tfsService.IsConnected)
         {
-            var serverUrl = string.Empty; // Will get from connection later
-            _launcherService.OpenWorkItemInVisualStudio(workItem.Id, serverUrl);
+            try
+            {
+                var serverUrl = string.Empty; // Will get from connection later
+                _launcherService.OpenWorkItemInVisualStudio(workItem.Id, serverUrl);
+            }
+            catch (InvalidOperationException)
+            {
+                // Show VS detection error dialog
+                var dialog = new Views.VsDetectionErrorDialog();
+                dialog.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open in Visual Studio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 

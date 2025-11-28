@@ -142,6 +142,10 @@ public class TfsService : ITfsService, IDisposable
             };
         }
 
+        // Create timeout token (30 seconds)
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(TimeSpan.FromSeconds(30));
+
         try
         {
             var witClient = _apiClient?.GetWorkItemClient();
@@ -166,7 +170,7 @@ public class TfsService : ITfsService, IDisposable
 
             var wiql = new Wiql { Query = query };
             var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
-            var queryResult = await retry.ExecuteAsync(ct => witClient.QueryByWiqlAsync(wiql, cancellationToken: ct), cancellationToken);
+            var queryResult = await retry.ExecuteAsync(ct => witClient.QueryByWiqlAsync(wiql, cancellationToken: ct), timeoutCts.Token);
 
             if (queryResult.WorkItems == null || !queryResult.WorkItems.Any())
             {
@@ -183,7 +187,7 @@ public class TfsService : ITfsService, IDisposable
                 //"System.Priority", "System.AreaPath", "System.IterationPath"
             };
 
-            var tfsWorkItems = await retry.ExecuteAsync(ct => witClient.GetWorkItemsAsync(ids, fields, cancellationToken: ct), cancellationToken);
+            var tfsWorkItems = await retry.ExecuteAsync(ct => witClient.GetWorkItemsAsync(ids, fields, cancellationToken: ct), timeoutCts.Token);
 
             var result = tfsWorkItems.Select(wi => new Models.WorkItem
             {
@@ -206,6 +210,14 @@ public class TfsService : ITfsService, IDisposable
             _cacheService.Set(cacheKey, result, TimeSpan.FromMinutes(5));
 
             return result;
+        }
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+            throw new TfsServiceException("Request timed out after 30 seconds", new TimeoutException())
+            {
+                ServerUrl = _credentials?.ServerUrl,
+                Operation = "GetAssignedWorkItems"
+            };
         }
         catch (Exception ex) when (ex is not TfsServiceException)
         {
@@ -232,6 +244,10 @@ public class TfsService : ITfsService, IDisposable
         {
             throw new TfsServiceException("Not connected to TFS server") { Operation = "GetPullRequests" };
         }
+
+        // Create timeout token (30 seconds)
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(TimeSpan.FromSeconds(30));
 
         try
         {
@@ -281,12 +297,20 @@ public class TfsService : ITfsService, IDisposable
                     }
                 }
                 return prs;
-            }, cancellationToken);
+            }, timeoutCts.Token);
 
             // Cache for 5 minutes
             _cacheService.Set(cacheKey, result, TimeSpan.FromMinutes(5));
 
             return result;
+        }
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+            throw new TfsServiceException("Request timed out after 30 seconds", new TimeoutException())
+            {
+                ServerUrl = _credentials?.ServerUrl,
+                Operation = "GetPullRequests"
+            };
         }
         catch (Exception ex) when (ex is not TfsServiceException)
         {
@@ -314,6 +338,10 @@ public class TfsService : ITfsService, IDisposable
             throw new TfsServiceException("Not connected to TFS server") { Operation = "GetCodeReviews" };
         }
 
+        // Create timeout token (30 seconds)
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(TimeSpan.FromSeconds(30));
+
         try
         {
             var witClient = _apiClient?.GetWorkItemClient();
@@ -333,7 +361,7 @@ public class TfsService : ITfsService, IDisposable
 
             var wiql = new Wiql { Query = query };
             var retry = RetryPolicy.CreateTfsDefaultPolicy(_logging);
-            var queryResult = await retry.ExecuteAsync(ct => witClient.QueryByWiqlAsync(wiql, cancellationToken: ct), cancellationToken);
+            var queryResult = await retry.ExecuteAsync(ct => witClient.QueryByWiqlAsync(wiql, cancellationToken: ct), timeoutCts.Token);
 
             if (queryResult.WorkItems == null || !queryResult.WorkItems.Any())
             {
@@ -349,7 +377,7 @@ public class TfsService : ITfsService, IDisposable
                 "System.AssignedTo", "System.CreatedDate", "System.ChangedDate"
             };
 
-            var tfsWorkItems = await retry.ExecuteAsync(ct => witClient.GetWorkItemsAsync(ids, fields, cancellationToken: ct), cancellationToken);
+            var tfsWorkItems = await retry.ExecuteAsync(ct => witClient.GetWorkItemsAsync(ids, fields, cancellationToken: ct), timeoutCts.Token);
 
             var result = tfsWorkItems.Select(wi => new CodeReview
             {
@@ -366,6 +394,14 @@ public class TfsService : ITfsService, IDisposable
             _cacheService.Set(cacheKey, result, TimeSpan.FromMinutes(5));
 
             return result;
+        }
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+            throw new TfsServiceException("Request timed out after 30 seconds", new TimeoutException())
+            {
+                ServerUrl = _credentials?.ServerUrl,
+                Operation = "GetCodeReviews"
+            };
         }
         catch (Exception ex) when (ex is not TfsServiceException)
         {

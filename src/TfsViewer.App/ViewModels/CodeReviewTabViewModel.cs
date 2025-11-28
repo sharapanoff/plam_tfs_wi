@@ -85,8 +85,21 @@ public partial class CodeReviewTabViewModel : ObservableObject
     {
         if (cr != null)
         {
-            // Pass the review web URL as server context for launcher fallback
-            _launcherService.OpenCodeReviewInVisualStudio(cr.Id, cr.Url);
+            try
+            {
+                // Pass the review web URL as server context for launcher fallback
+                _launcherService.OpenCodeReviewInVisualStudio(cr.Id, cr.Url);
+            }
+            catch (InvalidOperationException)
+            {
+                // Show VS detection error dialog
+                var dialog = new Views.VsDetectionErrorDialog();
+                dialog.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open in Visual Studio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 
