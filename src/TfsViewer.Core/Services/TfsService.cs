@@ -20,7 +20,7 @@ public class TfsService : ITfsService, IDisposable
     private readonly ICacheService _cacheService;
     private readonly ILoggingService? _logging;
     private TfsApiClient? _apiClient;
-    private CConsts? _credentials;
+    private IConstsTFS? _constsTFS;
     private string? _currentUser;
 
     public TfsService(ICacheService cacheService, ILoggingService? logging = null)
@@ -33,7 +33,7 @@ public class TfsService : ITfsService, IDisposable
 
     public string? CurrentUser => _currentUser;
 
-    public async Task<ConnectionResult> ConnectAsync(CConsts credentials, CancellationToken cancellationToken = default)
+    public async Task<ConnectionResult> ConnectAsync(IConstsTFS credentials, CancellationToken cancellationToken = default)
     {
         if (credentials == null)
             throw new ArgumentNullException(nameof(credentials));
@@ -68,7 +68,7 @@ public class TfsService : ITfsService, IDisposable
                 return ConnectionResult.FailureResult("Failed to connect to TFS server");
             }
 
-            _credentials = credentials;
+            _constsTFS = credentials;
 
             // Get authenticated user
             var connection = _apiClient.GetConnection();
@@ -89,7 +89,7 @@ public class TfsService : ITfsService, IDisposable
 
     public async Task<ConnectionResult> TestConnectionAsync(CancellationToken cancellationToken = default)
     {
-        if (!IsConnected || _credentials == null)
+        if (!IsConnected || _constsTFS == null)
         {
             return ConnectionResult.FailureResult("Not connected");
         }
@@ -119,7 +119,7 @@ public class TfsService : ITfsService, IDisposable
     {
         _apiClient?.Dispose();
         _apiClient = null;
-        _credentials = null;
+        _constsTFS = null;
         _currentUser = null;
         _cacheService.Clear();
     }
@@ -203,7 +203,7 @@ public class TfsService : ITfsService, IDisposable
                 AreaPath = wi.Fields.ContainsKey("System.AreaPath") ? wi.Fields["System.AreaPath"]?.ToString() ?? string.Empty : string.Empty,
                 IterationPath = wi.Fields.ContainsKey("System.IterationPath") ? wi.Fields["System.IterationPath"]?.ToString() ?? string.Empty : string.Empty,
                 // Construct proper TFS web UI URL instead of using API URL
-                Url = $"{_credentials?.ServerUrl}/_workitems/edit/{wi.Id ?? 0}"
+                Url = $"{_constsTFS?.ServerUrl}/_workitems/edit/{wi.Id ?? 0}"
             }).ToList();
 
             // Cache for 5 minutes
@@ -215,7 +215,7 @@ public class TfsService : ITfsService, IDisposable
         {
             throw new TfsServiceException("Request timed out after 30 seconds", new TimeoutException())
             {
-                ServerUrl = _credentials?.ServerUrl,
+                ServerUrl = _constsTFS?.ServerUrl,
                 Operation = "GetAssignedWorkItems"
             };
         }
@@ -224,7 +224,7 @@ public class TfsService : ITfsService, IDisposable
             _logging?.LogError("Failed to retrieve work items", ex);
             throw new TfsServiceException($"Failed to retrieve work items: {ex.Message}", ex)
             {
-                ServerUrl = _credentials?.ServerUrl,
+                ServerUrl = _constsTFS?.ServerUrl,
                 Operation = "GetAssignedWorkItems"
             };
         }
@@ -278,7 +278,7 @@ public class TfsService : ITfsService, IDisposable
                             // Construct proper TFS web UI URL for pull request
                             var projectName = repo.ProjectReference?.Name ?? "DefaultCollection";
                             var repoName = repo.Name ?? string.Empty;
-                            var prUrl = $"{_credentials?.ServerUrl}/{projectName}/_git/{repoName}/pullrequest/{pr.PullRequestId}";
+                            var prUrl = $"{_constsTFS?.ServerUrl}/{projectName}/_git/{repoName}/pullrequest/{pr.PullRequestId}";
                             
                             prs.Add(new PullRequest
                             {
@@ -308,7 +308,7 @@ public class TfsService : ITfsService, IDisposable
         {
             throw new TfsServiceException("Request timed out after 30 seconds", new TimeoutException())
             {
-                ServerUrl = _credentials?.ServerUrl,
+                ServerUrl = _constsTFS?.ServerUrl,
                 Operation = "GetPullRequests"
             };
         }
@@ -317,7 +317,7 @@ public class TfsService : ITfsService, IDisposable
             _logging?.LogError("Failed to retrieve pull requests", ex);
             throw new TfsServiceException($"Failed to retrieve pull requests: {ex.Message}", ex)
             {
-                ServerUrl = _credentials?.ServerUrl,
+                ServerUrl = _constsTFS?.ServerUrl,
                 Operation = "GetPullRequests"
             };
         }
@@ -387,7 +387,7 @@ public class TfsService : ITfsService, IDisposable
                 CreatedDate = wi.Fields.ContainsKey("System.CreatedDate") ? wi.Fields["System.CreatedDate"] as DateTime? ?? DateTime.MinValue : DateTime.MinValue,
                 Status = wi.Fields.ContainsKey("System.State") ? wi.Fields["System.State"]?.ToString() ?? string.Empty : string.Empty,
                 // Construct proper TFS web UI URL instead of using API URL
-                Url = $"{_credentials?.ServerUrl}/_workitems/edit/{wi.Id ?? 0}"
+                Url = $"{_constsTFS?.ServerUrl}/_workitems/edit/{wi.Id ?? 0}"
             }).ToList();
 
             // Cache for 5 minutes
@@ -399,7 +399,7 @@ public class TfsService : ITfsService, IDisposable
         {
             throw new TfsServiceException("Request timed out after 30 seconds", new TimeoutException())
             {
-                ServerUrl = _credentials?.ServerUrl,
+                ServerUrl = _constsTFS?.ServerUrl,
                 Operation = "GetCodeReviews"
             };
         }
@@ -408,7 +408,7 @@ public class TfsService : ITfsService, IDisposable
             _logging?.LogError("Failed to retrieve code reviews", ex);
             throw new TfsServiceException($"Failed to retrieve code reviews: {ex.Message}", ex)
             {
-                ServerUrl = _credentials?.ServerUrl,
+                ServerUrl = _constsTFS?.ServerUrl,
                 Operation = "GetCodeReviews"
             };
         }

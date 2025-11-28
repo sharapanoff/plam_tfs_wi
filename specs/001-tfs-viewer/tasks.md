@@ -63,7 +63,7 @@ Based on plan.md structure:
 - [X] T026 [P] Create ICacheService interface in src/TfsViewer.Core/Contracts/ICacheService.cs
 - [X] T027 [P] Create ICredentialStore interface in src/TfsViewer.Core/Contracts/ICredentialStore.cs
 - [X] T028 [P] Create ILauncherService interface in src/TfsViewer.App/Services/ILauncherService.cs
-- [X] T029 Create CredentialStore service in src/TfsViewer.Core/Infrastructure/CredentialStore.cs implementing ICredentialStore
+- [X] T029 Create CredentialStore service in src/TfsViewer.App/Infrastructure/CredentialStore.cs implementing ICredentialStore
 - [X] T030 Create CacheService in src/TfsViewer.Core/Services/CacheService.cs implementing ICacheService
 - [X] T031 Create TfsApiClient in src/TfsViewer.Core/Api/TfsApiClient.cs for TFS REST API communication
 - [X] T032 Create Configuration class in src/TfsViewer.App/Infrastructure/Configuration.cs for app settings
@@ -403,7 +403,7 @@ With multiple developers:
 
 ## Task Count Summary
 
- - **Total Tasks**: 166
+ - **Total Tasks**: 168
  - **Phase 1 (Setup)**: 18 tasks
  - **Phase 2 (Foundational)**: 23 tasks (BLOCKS all user stories)
  - **Phase 3 (User Story 1)**: 35 tasks - **MVP CORE**
@@ -413,7 +413,7 @@ With multiple developers:
  - **Phase 7 (System Tray)**: 10 tasks
  - **Phase 8 (Performance)**: 8 tasks
  - **Phase 9 (Polish)**: 15 tasks
- - **Remediation Additions**: 13 tasks
+ - **Remediation Additions**: 15 tasks
 
 **MVP Scope**: Setup (18) + Foundational (20) + US1 (32) + US4 (12) + Remediation core (T159-T160) = **84 tasks**
 
@@ -450,6 +450,8 @@ With multiple developers:
  - [X] T176 **BUG**: BrowserTarget should support two components: path to exe and argument; url should be appended after the argument (update TfsCredentials, SettingsWindow, SettingsViewModel, LauncherService)
  - [X] T177 **BUG**: Work items opened in browser show JSON instead of standard TFS UI - fix URL construction in LauncherService to use proper TFS web UI URL format in src/TfsViewer.Core/Services/TfsService.cs
  - [X] T178 **FEATURE**: Add configurable Visual Studio launch (exe path + argument) in SettingsWindow and use in LauncherService; remove VS detection code in src/TfsViewer.App/Services/LauncherService.cs and update model/viewmodel/UI
+ - [X] T179 **BUG**: Consolidate separate configuration files (appsettings.json and credentials.json) into single appsettings.json with proper interfaces (ICoreConfiguration, IAppConfiguration) - update Configuration.cs, CredentialStore.cs, AppConfiguration.cs, DI registration, and view models
+ - [X] T180 **ARCH**: Move CredentialStore from TfsViewer.Core to TfsViewer.App layer for better separation of concerns (credentials are app-specific, not core library concern)
 
 ---
 

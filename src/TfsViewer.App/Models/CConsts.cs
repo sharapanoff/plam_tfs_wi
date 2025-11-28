@@ -1,9 +1,11 @@
+using TfsViewer.Core.Contracts;
+
 namespace TfsViewer.Core.Models;
 
 /// <summary>
 /// Represents TFS authentication credentials
 /// </summary>
-public class CConsts
+public class CConsts : IConstsTFS
 {
     public string ServerUrl { get; set; } = string.Empty;
     

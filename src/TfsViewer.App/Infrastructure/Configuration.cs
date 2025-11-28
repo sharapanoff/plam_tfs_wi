@@ -1,13 +1,14 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TfsViewer.App.Contracts;
 
 namespace TfsViewer.App.Infrastructure;
 
 /// <summary>
-/// Application configuration settings
+/// Application configuration settings - implements IAppConfiguration interface
 /// </summary>
-public class Configuration
+public class Configuration : IAppConfiguration
 {
     private static readonly string AppDataFolder = 
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TfsViewer");
@@ -32,19 +33,31 @@ public class Configuration
 
     public string? VsArgument { get; set; }
 
-    public static Configuration Load()
+    public void Load()
     {
         if (!File.Exists(ConfigFile))
-            return new Configuration();
+            return;
 
         try
         {
             var json = File.ReadAllText(ConfigFile);
-            return JsonSerializer.Deserialize<Configuration>(json) ?? new Configuration();
+            var loaded = JsonSerializer.Deserialize<Configuration>(json);
+            if (loaded != null)
+            {
+                LastServerUrl = loaded.LastServerUrl;
+                RefreshIntervalMinutes = loaded.RefreshIntervalMinutes;
+                AutoRefreshEnabled = loaded.AutoRefreshEnabled;
+                LastProject = loaded.LastProject;
+                UseWindowsAuthentication = loaded.UseWindowsAuthentication;
+                BrowserExePath = loaded.BrowserExePath;
+                BrowserArgument = loaded.BrowserArgument;
+                VsExePath = loaded.VsExePath;
+                VsArgument = loaded.VsArgument;
+            }
         }
         catch
         {
-            return new Configuration();
+            // Keep default values
         }
     }
 

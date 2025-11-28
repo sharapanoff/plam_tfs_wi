@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TfsViewer.App.Contracts;
 using TfsViewer.App.Views;
 using TfsViewer.App.Infrastructure;
 using TfsViewer.Core.Contracts;
@@ -16,7 +17,7 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly ITfsService _tfsService;
     private readonly ICredentialStore _credentialStore;
-    private readonly Configuration _configuration;
+    private readonly IAppConfiguration _configuration;
     private readonly ICacheService _cacheService;
     private readonly DispatcherTimer _autoRefreshTimer;
 
@@ -44,7 +45,7 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(
         ITfsService tfsService,
         ICredentialStore credentialStore,
-        Configuration configuration,
+        IAppConfiguration configuration,
         ICacheService cacheService,
         WorkItemsTabViewModel workItemsTab,
         PullRequestTabViewModel? pullRequestsTab = null,

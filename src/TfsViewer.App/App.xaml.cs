@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using TfsViewer.App.Contracts;
 using TfsViewer.App.Services;
 using TfsViewer.App.Infrastructure;
 using TfsViewer.App.ViewModels;
@@ -88,8 +89,15 @@ public partial class App : Application
         services.AddTransient<TfsApiClient>();
 
         // App services
+        services.AddSingleton<IAppConfiguration>(sp =>
+        {
+            var config = new AppConfiguration();
+            config.Load();
+            return config;
+        });
+        services.AddSingleton<ICoreConfiguration>(sp => (AppConfiguration)sp.GetRequiredService<IAppConfiguration>());
         services.AddSingleton<ILauncherService, LauncherService>();
-        services.AddSingleton<Configuration>(_ => Configuration.Load());
+
 
         // ViewModels
         services.AddSingleton<WorkItemsTabViewModel>();
@@ -112,7 +120,7 @@ public partial class App : Application
             return new MainViewModel(
                 sp.GetRequiredService<ITfsService>(),
                 sp.GetRequiredService<ICredentialStore>(),
-                sp.GetRequiredService<Configuration>(),
+                sp.GetRequiredService<IAppConfiguration>(),
                 sp.GetRequiredService<ICacheService>(),
                 sp.GetRequiredService<WorkItemsTabViewModel>(),
                 sp.GetRequiredService<PullRequestTabViewModel>(),
