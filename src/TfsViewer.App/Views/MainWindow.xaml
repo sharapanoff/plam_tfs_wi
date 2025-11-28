@@ -173,6 +173,7 @@
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
                                                     ToolTip="Open work item in Visual Studio"
+                                                    Visibility="Collapsed"
                                                     Padding="10,4"/>
                                         </StackPanel>
                                     </DataTemplate>
@@ -261,7 +262,7 @@
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
                                                     ToolTip="Open pull request in Visual Studio"
-                                                    Visibility="{Binding DataContext.IsVisualStudioInstalled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"
+                                                    Visibility="Collapsed"
                                                     Padding="10,4"/>
                                         </StackPanel>
                                     </DataTemplate>
@@ -348,7 +349,7 @@
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
                                                     ToolTip="Open code review in Visual Studio"
-                                                    Visibility="{Binding DataContext.IsVisualStudioInstalled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"
+                                                    Visibility="Visible"
                                                     Padding="10,4"/>
                                         </StackPanel>
                                     </DataTemplate>

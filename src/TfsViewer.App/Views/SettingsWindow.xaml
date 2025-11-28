@@ -22,46 +22,43 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" 
-                   Text="settings" 
-                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                   Margin="0,0,0,20"/>
-
         <StackPanel Grid.Row="1" Margin="0,0,0,15">
             <TextBox materialDesign:HintAssist.Hint="Server URL (e.g., https://tfs.company.com/tfs/DefaultCollection)"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="0,0,0,5"/>
+                     Margin="0,0,0,10"/>
             
             <TextBlock Text="{Binding ServerUrlError}"
                        Foreground="Red"
                        FontSize="12"
                        Visibility="{Binding ServerUrlError, Converter={StaticResource NullToVisibilityConverter}}"
-                       Margin="0,0,0,5"/>
+                       Margin="0,0,0,10"/>
             
             <TextBox materialDesign:HintAssist.Hint="Custom Browser Exe (optional - e.g., C:\\Program Files\\Mozilla Firefox\\firefox.exe)"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Text="{Binding BrowserExePath, UpdateSourceTrigger=PropertyChanged}"
                      Margin="0,0,0,10"/>
-            
+
             <TextBox materialDesign:HintAssist.Hint="Browser Argument (optional - e.g., --new-window)"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     Text="{Binding BrowserArgument, UpdateSourceTrigger=PropertyChanged}"/>
+                     Text="{Binding BrowserArgument, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0,0,0,10"/>
 
-                        <TextBox materialDesign:HintAssist.Hint="Visual Studio Exe (optional - e.g., C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe)"
-                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                         Text="{Binding VsExePath, UpdateSourceTrigger=PropertyChanged}"
-                                         Margin="0,0,0,10"/>
+            <TextBox materialDesign:HintAssist.Hint="Visual Studio Exe (optional - e.g., C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe)"
+                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    Text="{Binding VsExePath, UpdateSourceTrigger=PropertyChanged}"
+                    Margin="0,0,0,10"/>
 
-                        <TextBox materialDesign:HintAssist.Hint="Visual Studio Argument (optional - e.g., -edit)"
-                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                         Text="{Binding VsArgument, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox materialDesign:HintAssist.Hint="Visual Studio Argument (optional - e.g., -edit)"
+                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    Text="{Binding VsArgument, UpdateSourceTrigger=PropertyChanged}"
+                    Margin="0,0,0,10"/>
         </StackPanel>
 
         <CheckBox Grid.Row="2"
                   Content="Use Windows Authentication (Recommended)"
                   IsChecked="{Binding UseWindowsAuthentication}"
-                  Margin="0,0,0,15"/>
+                  Margin="0,0,0,10"/>
 
         <StackPanel Grid.Row="3" 
                     Orientation="Horizontal" 
