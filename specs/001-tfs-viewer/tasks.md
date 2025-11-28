@@ -452,3 +452,18 @@ With multiple developers:
  - [X] T176 **BUG**: BrowserTarget should support two components: path to exe and argument; url should be appended after the argument (update TfsCredentials, SettingsWindow, SettingsViewModel, LauncherService)
  - [X] T177 **BUG**: Work items opened in browser show JSON instead of standard TFS UI - fix URL construction in LauncherService to use proper TFS web UI URL format in src/TfsViewer.Core/Services/TfsService.cs
  - [ ] T178 **FEATURE**: Add configurable Visual Studio launch (exe path + argument) in SettingsWindow and use in LauncherService; remove VS detection code in src/TfsViewer.App/Services/LauncherService.cs and update model/viewmodel/UI
+
+---
+
+## Phase 8: Performance Optimization
+
+**Purpose**: Optimize application performance for large datasets and smooth user experience
+
+- [X] T127 Implement UI virtualization with VirtualizingStackPanel in all DataGrids
+- [ ] T128 Configure RecyclingMode="Recycling" on all ListViews for memory efficiency (no ListViews present)
+- [X] T129 Implement parallel data fetching for work items, PRs, and reviews in MainViewModel
+- [X] T130 Add CancellationToken support to all async service methods (already implemented)
+- [X] T131 Implement CancellationTokenSource in tab ViewModels for fast tab switching (already implemented)
+- [ ] T132 Optimize DataTemplates to use minimal controls and freeze graphics objects (DataTemplates are minimal)
+- [ ] T134 Add cache warming on app startup (load from memory cache, then refresh in background) (cache checked on load)
+- [ ] T137 Implement lazy loading for detail views (only load on "View More" click) (no detail views present)

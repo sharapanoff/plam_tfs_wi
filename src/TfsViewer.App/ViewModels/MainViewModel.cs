@@ -158,15 +158,24 @@ public partial class MainViewModel : ObservableObject
 
         try
         {
-            await WorkItemsTab.LoadWorkItemsAsync();
+            // Load data in parallel
+            var tasks = new List<Task>
+            {
+                WorkItemsTab.LoadWorkItemsAsync()
+            };
+
             if (PullRequestsTab != null)
             {
-                await PullRequestsTab.LoadPullRequestsAsync();
+                tasks.Add(PullRequestsTab.LoadPullRequestsAsync());
             }
+
             if (CodeReviewsTab != null)
             {
-                await CodeReviewsTab.LoadCodeReviewsAsync();
+                tasks.Add(CodeReviewsTab.LoadCodeReviewsAsync());
             }
+
+            await Task.WhenAll(tasks);
+
             LastRefreshTime = DateTime.Now;
             var prCount = PullRequestsTab?.PullRequestCount ?? 0;
             var crCount = CodeReviewsTab?.CodeReviewCount ?? 0;
