@@ -11,6 +11,11 @@
         WindowStartupLocation="CenterScreen"
         Style="{StaticResource MaterialDesignWindow}">
 
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}"/>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding OpenSettingsCommand}"/>
+    </Window.InputBindings>
+
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
     </Window.Resources>
@@ -39,6 +44,19 @@
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Settings" VerticalAlignment="Center" Margin="0,0,5,0"/>
                             <TextBlock Text="Settings" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <Separator/>
+
+                <Button Command="{Binding OpenAboutCommand}"
+                        ToolTip="About TFS Viewer"
+                        Style="{StaticResource MaterialDesignToolButton}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="InformationOutline" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock Text="About" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button.Content>
                 </Button>
@@ -146,6 +164,7 @@
                                                     Command="{Binding DataContext.WorkItemsTab.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    ToolTip="Open work item in browser"
                                                     Margin="0,0,5,0"
                                                     Padding="10,4"/>
                                             
@@ -153,6 +172,8 @@
                                                     Command="{Binding DataContext.WorkItemsTab.OpenInVisualStudioCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    ToolTip="Open work item in Visual Studio"
+                                                    Visibility="{Binding DataContext.IsVisualStudioInstalled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"
                                                     Padding="10,4"/>
                                         </StackPanel>
                                     </DataTemplate>
@@ -233,12 +254,15 @@
                                                     Command="{Binding DataContext.PullRequestsTab.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    ToolTip="Open pull request in browser"
                                                     Margin="0,0,5,0"
                                                     Padding="10,4"/>
                                             <Button Content="VS"
                                                     Command="{Binding DataContext.PullRequestsTab.OpenInVisualStudioCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    ToolTip="Open pull request in Visual Studio"
+                                                    Visibility="{Binding DataContext.IsVisualStudioInstalled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"
                                                     Padding="10,4"/>
                                         </StackPanel>
                                     </DataTemplate>
@@ -317,12 +341,15 @@
                                                     Command="{Binding DataContext.CodeReviewsTab.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    ToolTip="Open code review in browser"
                                                     Margin="0,0,5,0"
                                                     Padding="10,4"/>
                                             <Button Content="VS"
                                                     Command="{Binding DataContext.CodeReviewsTab.OpenInVisualStudioCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                    ToolTip="Open code review in Visual Studio"
+                                                    Visibility="{Binding DataContext.IsVisualStudioInstalled, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"
                                                     Padding="10,4"/>
                                         </StackPanel>
                                     </DataTemplate>

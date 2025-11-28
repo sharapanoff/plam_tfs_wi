@@ -31,7 +31,13 @@
             <TextBox materialDesign:HintAssist.Hint="Server URL (e.g., https://tfs.company.com/tfs/DefaultCollection)"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="0,0,0,10"/>
+                     Margin="0,0,0,5"/>
+            
+            <TextBlock Text="{Binding ServerUrlError}"
+                       Foreground="Red"
+                       FontSize="12"
+                       Visibility="{Binding ServerUrlError, Converter={StaticResource NullToVisibilityConverter}}"
+                       Margin="0,0,0,5"/>
             
             <TextBox materialDesign:HintAssist.Hint="Custom Browser Exe (optional - e.g., C:\\Program Files\\Mozilla Firefox\\firefox.exe)"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"

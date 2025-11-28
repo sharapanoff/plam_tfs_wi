@@ -22,6 +22,9 @@ public partial class SettingsViewModel : ObservableObject
     private string _serverUrl = string.Empty;
 
     [ObservableProperty]
+    private string? _serverUrlError;
+
+    [ObservableProperty]
     private bool _useWindowsAuthentication = true;
 
     [ObservableProperty]
@@ -63,20 +66,32 @@ public partial class SettingsViewModel : ObservableObject
 
     private void LoadSavedSettings()
     {
-        var credentials = _credentialStore.LoadCredentials();
-        if (credentials != null)
+        ServerUrl = _configuration.LastServerUrl ?? string.Empty;
+        UseWindowsAuthentication = _configuration.UseWindowsAuthentication;
+        BrowserExePath = _configuration.BrowserExePath;
+        BrowserArgument = _configuration.BrowserArgument;
+        VsExePath = _configuration.VsExePath;
+        VsArgument = _configuration.VsArgument;
+    }
+
+    private string? ValidateServerUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
         {
-            ServerUrl = credentials.ServerUrl;
-            UseWindowsAuthentication = credentials.UseWindowsAuthentication;
-            BrowserExePath = credentials.BrowserExePath;
-            BrowserArgument = credentials.BrowserArgument;
-            VsExePath = credentials.VsExePath;
-            VsArgument = credentials.VsArgument;
+            return "Server URL is required";
         }
-        else if (!string.IsNullOrWhiteSpace(_configuration.LastServerUrl))
+
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uriResult))
         {
-            ServerUrl = _configuration.LastServerUrl;
+            return "Invalid URL format";
         }
+
+        if (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps)
+        {
+            return "URL must start with http:// or https://";
+        }
+
+        return null; // Valid
     }
 
     [RelayCommand]

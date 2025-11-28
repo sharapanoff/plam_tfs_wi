@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using TfsViewer.App.Views;
 using TfsViewer.App.Infrastructure;
 using TfsViewer.Core.Contracts;
+using TfsViewer.Services;
 
 namespace TfsViewer.App.ViewModels;
 
@@ -17,6 +18,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ICredentialStore _credentialStore;
     private readonly Configuration _configuration;
     private readonly ICacheService _cacheService;
+    private readonly ILauncherService _launcherService;
     private readonly DispatcherTimer _autoRefreshTimer;
 
     [ObservableProperty]
@@ -40,6 +42,8 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _trayTooltip = "TFS Viewer"; // Dynamic tooltip for tray icon
 
+    public bool IsVisualStudioInstalled => _launcherService?.IsVisualStudioInstalled ?? false;
+
     public MainViewModel(
         ITfsService tfsService,
         ICredentialStore credentialStore,
@@ -47,7 +51,8 @@ public partial class MainViewModel : ObservableObject
         ICacheService cacheService,
         WorkItemsTabViewModel workItemsTab,
         PullRequestTabViewModel? pullRequestsTab = null,
-        CodeReviewTabViewModel? codeReviewsTab = null)
+        CodeReviewTabViewModel? codeReviewsTab = null,
+        ILauncherService? launcherService = null)
     {
         _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
         _credentialStore = credentialStore ?? throw new ArgumentNullException(nameof(credentialStore));
@@ -56,6 +61,7 @@ public partial class MainViewModel : ObservableObject
         _workItemsTab = workItemsTab ?? throw new ArgumentNullException(nameof(workItemsTab));
         _pullRequestsTab = pullRequestsTab;
         _codeReviewsTab = codeReviewsTab;
+        _launcherService = launcherService;
 
         // Setup auto-refresh timer (5 minutes)
         _autoRefreshTimer = new DispatcherTimer
@@ -128,6 +134,13 @@ public partial class MainViewModel : ObservableObject
     private void OpenSettings()
     {
         ShowSettingsWindow();
+    }
+
+    [RelayCommand]
+    private void OpenAbout()
+    {
+        var aboutWindow = new Views.AboutWindow();
+        aboutWindow.ShowDialog();
     }
 
     private void ShowSettingsWindow()
@@ -217,6 +230,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void Exit()
     {
-        Application.Current?.Shutdown();
+        var result = MessageBox.Show("Are you sure you want to exit TFS Viewer?", "Confirm Exit", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (result == MessageBoxResult.Yes)
+        {
+            Application.Current?.Shutdown();
+        }
     }
 }

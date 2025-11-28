@@ -257,15 +257,15 @@ Removed for scope focus: T133 disk cache, T135 LRU eviction, T136 performance co
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T139 [P] Add input validation to SettingsWindow for server URL format
-- [ ] T140 [P] Add visual feedback for successful connection in SettingsWindow
-- [ ] T142 [P] Add keyboard shortcuts (F5 for refresh, Ctrl+S for settings)
-- [ ] T145 [P] Create application icon and set in TfsViewer.App project properties
-- [ ] T146 Add "About" dialog with version information and credits
-- [ ] T147 Implement graceful degradation when Visual Studio not installed (hide VS buttons)
-- [ ] T148 Add tooltip documentation to all buttons and interactive elements
-- [ ] T149 Implement accessibility features (keyboard navigation, screen reader support) (optional if later specified)
-- [ ] T150 Add confirmation dialog for Exit command
+- [X] T139 [P] Add input validation to SettingsWindow for server URL format
+- [X] T140 [P] Add visual feedback for successful connection in SettingsWindow
+- [X] T142 [P] Add keyboard shortcuts (F5 for refresh, Ctrl+S for settings)
+- [X] T145 [P] Create application icon and set in TfsViewer.App project properties
+- [X] T146 Add "About" dialog with version information and credits
+- [X] T147 Implement graceful degradation when Visual Studio not installed (hide VS buttons)
+- [X] T148 Add tooltip documentation to all buttons and interactive elements
+- [X] T149 Implement accessibility features (keyboard navigation, screen reader support) (optional if later specified)
+- [X] T150 Add confirmation dialog for Exit command
 - [X] T151 Create README.md with quick start instructions in repository root
 - [X] T152 Update quickstart.md with actual implementation details
 - [X] T153 Add error logging to file for debugging (in %LOCALAPPDATA%\TfsViewer\logs\)

@@ -22,6 +22,16 @@ public class Configuration
     
     public string? LastProject { get; set; }
 
+    public bool UseWindowsAuthentication { get; set; } = true;
+
+    public string? BrowserExePath { get; set; }
+
+    public string? BrowserArgument { get; set; }
+
+    public string? VsExePath { get; set; }
+
+    public string? VsArgument { get; set; }
+
     public static Configuration Load()
     {
         if (!File.Exists(ConfigFile))
