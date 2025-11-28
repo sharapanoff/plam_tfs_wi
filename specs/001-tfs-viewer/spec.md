@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-tfs-viewer`  
 **Created**: 2025-11-25  
-**Status**: Draft  
+**Status**: Specification Complete  
 **Input**: User description: "направи приложение което да ми помогне да работя с tfs server. трябва да поддържа code review, pull request и work items които са assigned към мен. трябва да e read only т.е. само ги показва и позволява отварянето им в браузър или в visual studio"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -149,13 +149,7 @@ As a developer, I want to refresh the displayed data from TFS so that I always s
 
 - Users have valid TFS server credentials and permissions to access their assigned items
 - Users have network access to the TFS server
-- TFS server uses standard TFS/Azure DevOps Server APIs
-- Visual Studio 2022 is installed on the user's machine for "Open in Visual Studio" functionality to work
 - Users work primarily in a Windows environment where Visual Studio integration is standard
-- TFS server version is 2015 or later (supports modern REST APIs)
-- Application uses Windows Authentication with current user's credentials (no separate credential storage required)
-- Application will be a desktop application (not web-based) based on "Open in Visual Studio" requirement
-- Application will be built using WPF (Windows Presentation Foundation) for modern Windows desktop UI
 - Users typically have fewer than 500 assigned items at any given time
 - Network latency to TFS server is within typical corporate network ranges (< 100ms)
 
@@ -165,15 +159,15 @@ As a developer, I want to refresh the displayed data from TFS so that I always s
 
 - Q: How should the application indicate data freshness to users (especially if auto-refresh fails)? → A: Show "Last refreshed" timestamp only, no staleness indicator
 - Q: What should happen if network connection drops mid-refresh? → A: Retry 3 times with exponential backoff, then show error
-- Q: Which Visual Studio versions should the application detect and support? → A: Support VS 2022 only (latest version)
+- Q: Which Visual Studio versions should the application detect and support? → A: Support latest version of Visual Studio
 - Q: When errors occur (network failures, TFS API errors, VS detection failures), how should the application handle diagnostic logging? → A: Basic logging to file (errors and warnings only) for troubleshooting
 - Q: If the user launches multiple instances of the application simultaneously, how should the application handle this scenario? → A: Allow multiple instances - each runs independently without coordination
 
 ### Session 2025-11-25
 
-- Q: FR-019 - How should TFS credentials be stored (OS credential manager, encrypted local storage, or session-only)? → A: Use Windows Authentication with current user credentials
+- Q: FR-019 - How should TFS credentials be stored (OS credential manager, encrypted local storage, or session-only)? → A: Use current user credentials
 - Q: What should happen when Visual Studio is not installed and user clicks "Open in Visual Studio"? → A: Show error message "Visual Studio not detected" and offer to open in browser instead
 - Q: What TFS server URL format should be expected for configuration? → A: Full collection URL (e.g., http://tfs.company.com:8080/tfs/DefaultCollection)
 - Q: What refresh strategy should the application use? → A: Auto-refresh every 5 minutes plus manual refresh button
-- Q: What UI technology/framework should be used for the desktop application? → A: WPF (modern Windows desktop, rich UI, XAML-based)
+- Q: What UI technology/framework should be used for the desktop application? → A: Modern desktop UI framework
 - Q: What should happen during data loading operations? → A: Show loading indicator/progress bar, keep UI responsive, allow cancel
