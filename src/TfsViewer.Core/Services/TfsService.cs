@@ -273,14 +273,25 @@ public class TfsService : ITfsService, IDisposable
                     var prList = await gitClient.GetPullRequestsAsync(repo.Id, criteria, cancellationToken: ct);
                     foreach (var pr in prList)
                     {
-                        if (pr.Reviewers != null && pr.Reviewers.Any(r => string.Equals(r.DisplayName, _currentUser, StringComparison.OrdinalIgnoreCase)))
+                        // Check if current user is a reviewer
+                        var currentReviewer = pr.Reviewers?.FirstOrDefault(r => string.Equals(r.DisplayName, _currentUser, StringComparison.OrdinalIgnoreCase));
+                        
+                        // Skip if not waiting for me
+                        //10 - approved 5 - approved with suggestions 0 - no vote -5 - waiting for author -10 - rejected
+                        if (currentReviewer == null || 
+                            currentReviewer.Vote == 10 ||
+                            currentReviewer.Vote == 5 ||
+                            currentReviewer.Vote == -10 )
                         {
-                            // Construct proper TFS web UI URL for pull request
-                            var projectName = repo.ProjectReference?.Name ?? "DefaultCollection";
-                            var repoName = repo.Name ?? string.Empty;
-                            var prUrl = $"{_constsTFS?.ServerUrl}/{projectName}/_git/{repoName}/pullrequest/{pr.PullRequestId}";
-                            
-                            prs.Add(new PullRequest
+                            continue;
+                        }
+                        
+                        // Construct proper TFS web UI URL for pull request
+                        var projectName = repo.ProjectReference?.Name ?? "DefaultCollection";
+                        var repoName = repo.Name ?? string.Empty;
+                        var prUrl = $"{_constsTFS?.ServerUrl}/{projectName}/_git/{repoName}/pullrequest/{pr.PullRequestId}";
+                        
+                        prs.Add(new PullRequest
                             {
                                 Id = pr.PullRequestId,
                                 Title = pr.Title ?? string.Empty,
@@ -289,11 +300,10 @@ public class TfsService : ITfsService, IDisposable
                                 SourceBranch = pr.SourceRefName ?? string.Empty,
                                 TargetBranch = pr.TargetRefName ?? string.Empty,
                                 CreatedDate = pr.CreationDate,
-                                Status = pr.Status.ToString(),
-                                Url = prUrl,
-                                IsDraft = pr.IsDraft ?? false
-                            });
-                        }
+                            Status = pr.Status.ToString(),
+                            Url = prUrl,
+                            IsDraft = pr.IsDraft ?? false
+                        });
                     }
                 }
                 return prs;

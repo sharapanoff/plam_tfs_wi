@@ -252,6 +252,7 @@ Based on plan.md structure:
 - [X] T193 **ENHANCEMENT**: Update Pull Requests tab - hide Status column and display Date with time (yyyy-MM-dd HH:mm)
 - [X] T194 **ENHANCEMENT**: Update Work Items tab - display Assigned Date with time (yyyy-MM-dd HH:mm)
 - [X] T195 **ENHANCEMENT**: Update all three tabs - align Actions column to right/top and remove column header
+- [X] T196 **BUG**: Filter out pull requests where current user has already approved (vote = 10) from Pull Requests tab
 
 ---
 
