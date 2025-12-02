@@ -215,6 +215,43 @@ Based on plan.md structure:
 
 ---
 
+## Phase 10: User Story 5 - Modify Code Review Display (Priority: P4)
+
+**Goal**: Improve the Code Review display format with better requester information, date/time display, project/area information, and full title text
+
+**Changes Required**:
+- requester: Show actual name instead of Microsoft.VisualStudio.Services.WebApi.IdentityRef
+- date: Display date with time
+- status: Remove status column
+- PROJECT: Add new column showing project and area path
+- Title: Display full title text (multi-line if needed)
+
+**Independent Test**: Verify code reviews display with requester name, date/time, project/area, full title, and no status column
+
+### Implementation for User Story 5
+
+- [X] T181 [US5] Update CodeReview model to include Project and AreaPath properties in src/TfsViewer.Core/Models/CodeReview.cs
+- [X] T182 [US5] Update TfsService.GetCodeReviewsAsync to fetch requester display name instead of IdentityRef in src/TfsViewer.Core/Services/TfsService.cs
+- [X] T183 [US5] Update TfsService.GetCodeReviewsAsync to include project and area path information in src/TfsViewer.Core/Services/TfsService.cs
+- [X] T184 [US5] Update CodeReviewViewModel to display date with time format in src/TfsViewer.App/ViewModels/CodeReviewViewModel.cs
+- [X] T185 [US5] Update CodeReviewViewModel to include ProjectArea property combining project and area in src/TfsViewer.App/ViewModels/CodeReviewViewModel.cs
+- [X] T186 [US5] Update DataTemplate for CodeReview display in MainWindow.xaml - remove Status column, add PROJECT column, update Title to allow multi-line in src/TfsViewer.App/Views/MainWindow.xaml
+- [X] T187 [US5] Update column headers and bindings for the new Code Review display format in MainWindow.xaml
+- [X] T188 [US5] Test and verify the updated Code Review display shows all required information correctly
+
+**Checkpoint**: Code Review display updated with improved formatting and additional project/area information
+
+---
+
+## Bug Fixes
+
+- [X] T189 **BUG**: Fix CodeReview.RequestedBy to use System.CreatedBy instead of System.AssignedTo in TfsService.GetCodeReviewsAsync (requester should be the creator, not the reviewer)
+- [X] T190 **BUG**: Fix CodeReview.Project field to populate from System.TeamProject and System.AreaPath fields in TfsService.GetCodeReviewsAsync
+- [X] T191 **ENHANCEMENT**: Update PROJECT column display to show area first, then project in bold below it in Code Reviews tab
+- [X] T192 **ENHANCEMENT**: Add double-click functionality to Title column in Code Reviews tab to toggle between shortened and full text display
+
+---
+
 ## Phase 7: System Tray Integration (Priority: P3)
 
 **Goal**: Provide persistent system tray presence with quick actions (restore, refresh, exit) and minimize-to-tray UX.
@@ -285,6 +322,7 @@ Removed out-of-scope polish: T141 Remember me, T143 Theme selection, T144 Accent
 - **User Story 4 (Phase 4)**: Depends on US1 completion (extends refresh functionality)
 - **User Story 2 (Phase 5)**: Depends on Foundational completion - Can run parallel to US3/US4
 - **User Story 3 (Phase 6)**: Depends on Foundational completion - Can run parallel to US2/US4
+- **User Story 5 (Phase 10)**: Depends on US3 completion (modifies existing code review display)
 - **System Tray (Phase 7)**: Depends on US1 completion (requires MainWindow)
 - **Performance (Phase 8)**: Depends on all user stories being implemented
 - **Polish (Phase 9)**: Depends on all desired user stories being complete
@@ -295,6 +333,7 @@ Removed out-of-scope polish: T141 Remember me, T143 Theme selection, T144 Accent
 - **User Story 4 (P2)**: Requires US1 complete (extends work items with refresh) - Can be implemented before US2/US3
 - **User Story 2 (P2)**: Can start after Foundational (Phase 2) - Independent from US1/US3/US4, integrates into refresh
 - **User Story 3 (P3)**: Can start after Foundational (Phase 2) - Independent from US1/US2/US4, integrates into refresh
+- **User Story 5 (P4)**: Requires US3 complete (modifies existing code review display) - Can be implemented after US3
 
 ### Within Each User Story
 
@@ -314,6 +353,7 @@ Removed out-of-scope polish: T141 Remember me, T143 Theme selection, T144 Accent
 - **User Story 1**: WorkItemViewModel and WorkItemsTabViewModel (T044-T045) can be created in parallel
 - **User Story 2**: PullRequestViewModel and PullRequestTabViewModel (T083-T084) can be created in parallel
 - **User Story 3**: CodeReviewViewModel and CodeReviewTabViewModel (T100-T101) can be created in parallel
+- **User Story 5**: Model updates and service updates (T181-T183) can be done in parallel with ViewModel updates (T184-T185)
 - **After Foundational**: US2 and US3 can be worked on in parallel (independent implementations)
 - **Polish Phase**: Documentation tasks (T139-T145, T151-T152) can run in parallel
 
@@ -366,8 +406,9 @@ Developer B: User Story 3 (Code Reviews) - Tasks T100-T116
 3. Add User Story 4 → Test independently → **Enhanced MVP** (with refresh)
 4. Add User Story 2 → Test independently → **Feature Complete v1** (with pull requests)
 5. Add User Story 3 → Test independently → **Feature Complete v2** (with code reviews)
--6. (Removed) System Tray out-of-scope – skip to Performance after core stories
-7. Add Performance + Polish → **Production Ready**
+6. Add User Story 5 → Test independently → **Enhanced UI** (improved code review display)
+-7. (Removed) System Tray out-of-scope – skip to Performance after core stories
+8. Add Performance + Polish → **Production Ready**
 
 Each increment adds value without breaking previous stories.
 
@@ -383,7 +424,9 @@ With multiple developers:
    - Developer A: User Story 4 (T071-T082)
    - Developer B: User Story 2 (T083-T099)
    - Developer C: User Story 3 (T100-T116)
-4. Team reconvenes for Performance (T127-T138) and Polish (T139-T158)
+4. After US3 complete:
+   - Developer D: User Story 5 (T181-T188) → UI enhancement
+5. Team reconvenes for Performance (T127-T138) and Polish (T139-T158)
 
 ---
 
@@ -403,13 +446,14 @@ With multiple developers:
 
 ## Task Count Summary
 
- - **Total Tasks**: 168
+ - **Total Tasks**: 176
  - **Phase 1 (Setup)**: 18 tasks
  - **Phase 2 (Foundational)**: 23 tasks (BLOCKS all user stories)
  - **Phase 3 (User Story 1)**: 35 tasks - **MVP CORE**
  - **Phase 4 (User Story 4)**: 13 tasks - **MVP ENHANCEMENT**
  - **Phase 5 (User Story 2)**: 17 tasks
  - **Phase 6 (User Story 3)**: 17 tasks
+ - **Phase 10 (User Story 5)**: 8 tasks
  - **Phase 7 (System Tray)**: 10 tasks
  - **Phase 8 (Performance)**: 8 tasks
  - **Phase 9 (Polish)**: 15 tasks
@@ -424,6 +468,7 @@ With multiple developers:
 - **US4**: Modify TFS data, refresh, verify updates; test offline error handling
 - **US2**: Create PR assigned to user, verify display in tab, test browser/VS launch
 - **US3**: Assign code review to user, verify display in tab, test browser/VS launch
+- **US5**: Verify code reviews display with requester name, date/time, project/area, full title, and no status column
 
 ---
 

@@ -18,4 +18,8 @@ public class CodeReview
     public string Url { get; set; } = string.Empty;
     
     public string Context { get; set; } = string.Empty;
+    
+    public string ProjectName { get; set; } = string.Empty;
+    
+    public string AreaPath { get; set; } = string.Empty;
 }

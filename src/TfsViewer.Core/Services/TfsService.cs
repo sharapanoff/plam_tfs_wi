@@ -374,7 +374,8 @@ public class TfsService : ITfsService, IDisposable
             var fields = new[] 
             { 
                 "System.Id", "System.Title", "System.WorkItemType", "System.State",
-                "System.AssignedTo", "System.CreatedDate", "System.ChangedDate"
+                "System.AssignedTo", "System.CreatedBy", "System.CreatedDate", "System.ChangedDate",
+                "System.TeamProject", "System.AreaPath"
             };
 
             var tfsWorkItems = await retry.ExecuteAsync(ct => witClient.GetWorkItemsAsync(ids, fields, cancellationToken: ct), timeoutCts.Token);
@@ -383,9 +384,11 @@ public class TfsService : ITfsService, IDisposable
             {
                 Id = wi.Id ?? 0,
                 Title = wi.Fields.ContainsKey("System.Title") ? wi.Fields["System.Title"]?.ToString() ?? string.Empty : string.Empty,
-                RequestedBy = wi.Fields.ContainsKey("System.AssignedTo") ? wi.Fields["System.AssignedTo"]?.ToString() ?? string.Empty : string.Empty,
+                RequestedBy = wi.Fields.ContainsKey("System.CreatedBy") ? (wi.Fields["System.CreatedBy"] as Microsoft.VisualStudio.Services.WebApi.IdentityRef)?.DisplayName ?? string.Empty : string.Empty,
                 CreatedDate = wi.Fields.ContainsKey("System.CreatedDate") ? wi.Fields["System.CreatedDate"] as DateTime? ?? DateTime.MinValue : DateTime.MinValue,
                 Status = wi.Fields.ContainsKey("System.State") ? wi.Fields["System.State"]?.ToString() ?? string.Empty : string.Empty,
+                ProjectName = wi.Fields.ContainsKey("System.TeamProject") ? wi.Fields["System.TeamProject"]?.ToString() ?? string.Empty : string.Empty,
+                AreaPath = wi.Fields.ContainsKey("System.AreaPath") ? wi.Fields["System.AreaPath"]?.ToString() ?? string.Empty : string.Empty,
                 // Construct proper TFS web UI URL instead of using API URL
                 Url = $"{_constsTFS?.ServerUrl}/_workitems/edit/{wi.Id ?? 0}"
             }).ToList();

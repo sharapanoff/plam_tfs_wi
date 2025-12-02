@@ -139,10 +139,18 @@
                             <DataGridTextColumn Header="ID" 
                                                 Binding="{Binding Id}" 
                                                 Width="80"/>
-                            
-                            <DataGridTextColumn Header="Title" 
-                                                Binding="{Binding Title}" 
-                                                Width="*"/>
+
+                            <DataGridTextColumn Header="Title" Width="*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="Title"/>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
                             
                             <DataGridTextColumn Header="Type" 
                                                 Binding="{Binding WorkItemType}" 
@@ -241,7 +249,17 @@
 
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
-                            <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                            <DataGridTextColumn Header="Title" Width="*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="Title"/>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Author" Binding="{Binding Author}" Width="160"/>
                             <DataGridTextColumn Header="Date" Binding="{Binding CreationDate, StringFormat={}{0:yyyy-MM-dd}}" Width="120"/>
                             <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
@@ -328,10 +346,20 @@
                               Margin="0,10,0,0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
-                            <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                            <DataGridTextColumn Header="Title" Width="*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="Title"/>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Requester" Binding="{Binding Requester}" Width="160"/>
-                            <DataGridTextColumn Header="Date" Binding="{Binding CreationDate, StringFormat={}{0:yyyy-MM-dd}}" Width="120"/>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+                            <DataGridTextColumn Header="Date" Binding="{Binding CreationDateWithTime}" Width="140"/>
+                            <DataGridTextColumn Header="PROJECT" Binding="{Binding ProjectAreaDisplay}" Width="200"/>
 
                             <DataGridTemplateColumn Header="Actions" Width="200">
                                 <DataGridTemplateColumn.CellTemplate>
