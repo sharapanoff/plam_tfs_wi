@@ -2,6 +2,30 @@
 
 A Windows desktop application for viewing Team Foundation Server (TFS) work items, pull requests, and code reviews assigned to you.
 
+## 🌟Note About This Application
+
+This application was built **entirely using Artificial Intelligence**.  
+Its development methodology is **Spec-Driven Development**, powered by **spec-kit**.  
+🔗 <https://github.com/github/spec-kit>
+
+The idea was inspired by this insightful article:  
+🔗 <https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html>
+
+
+### 🎯 Purpose
+
+I work on multiple projects simultaneously, and I needed a tool that allows me to quickly see **what tasks I currently have on my plate**.  
+This app solves exactly that.
+
+
+### 🛠 Development Process
+
+While the tool generated most of the code automatically, some improvements were still necessary.  
+My role was mostly **debugging**, and whenever I noticed needed changes, I tried to **express them as new specifications and requirements for the tool**, so it could update the code accordingly.
+
+---
+
+
 ## Features
 
 - 📋 **View Assigned Work Items** - See all work items assigned to you with ID, title, type, state, and assigned date
