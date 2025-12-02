@@ -26,6 +26,8 @@ public partial class WorkItemViewModel : ObservableObject
     [ObservableProperty]
     private string _url = string.Empty;
 
+    public string AssignedDateWithTime => AssignedDate?.ToString("yyyy-MM-dd HH:mm") ?? string.Empty;
+
     public static WorkItemViewModel FromModel(WorkItem model)
     {
         return new WorkItemViewModel

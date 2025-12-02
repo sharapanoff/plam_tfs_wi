@@ -161,13 +161,13 @@
                                                 Width="120"/>
                             
                             <DataGridTextColumn Header="Assigned Date" 
-                                                Binding="{Binding AssignedDate, StringFormat={}{0:yyyy-MM-dd}}" 
-                                                Width="120"/>
+                                                Binding="{Binding AssignedDateWithTime}" 
+                                                Width="140"/>
 
-                            <DataGridTemplateColumn Header="Actions" Width="200">
+                            <DataGridTemplateColumn Width="200">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                             <Button Content="Browser"
                                                     Command="{Binding DataContext.WorkItemsTab.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"
@@ -261,13 +261,12 @@
                                 </DataGridTextColumn.Binding>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Author" Binding="{Binding Author}" Width="160"/>
-                            <DataGridTextColumn Header="Date" Binding="{Binding CreationDate, StringFormat={}{0:yyyy-MM-dd}}" Width="120"/>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+                            <DataGridTextColumn Header="Date" Binding="{Binding CreationDateWithTime}" Width="140"/>
 
-                            <DataGridTemplateColumn Header="Actions" Width="200">
+                            <DataGridTemplateColumn Width="200">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                             <Button Content="Browser"
                                                     Command="{Binding DataContext.PullRequestsTab.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"
@@ -361,10 +360,10 @@
                             <DataGridTextColumn Header="Date" Binding="{Binding CreationDateWithTime}" Width="140"/>
                             <DataGridTextColumn Header="PROJECT" Binding="{Binding ProjectAreaDisplay}" Width="200"/>
 
-                            <DataGridTemplateColumn Header="Actions" Width="200">
+                            <DataGridTemplateColumn Width="200">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                             <Button Content="Browser"
                                                     Command="{Binding DataContext.CodeReviewsTab.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                     CommandParameter="{Binding}"

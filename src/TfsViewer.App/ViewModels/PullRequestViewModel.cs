@@ -11,6 +11,8 @@ public partial class PullRequestViewModel : ObservableObject
     [ObservableProperty] private string _status = string.Empty;
     [ObservableProperty] private string _url = string.Empty;
 
+    public string CreationDateWithTime => CreationDate?.ToString("yyyy-MM-dd HH:mm") ?? string.Empty;
+
     public static PullRequestViewModel FromModel(TfsViewer.Core.Models.PullRequest pr)
     {
         return new PullRequestViewModel

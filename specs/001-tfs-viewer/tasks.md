@@ -249,6 +249,9 @@ Based on plan.md structure:
 - [X] T190 **BUG**: Fix CodeReview.Project field to populate from System.TeamProject and System.AreaPath fields in TfsService.GetCodeReviewsAsync
 - [X] T191 **ENHANCEMENT**: Update PROJECT column display to show area first, then project in bold below it in Code Reviews tab
 - [X] T192 **ENHANCEMENT**: Add double-click functionality to Title column in Code Reviews tab to toggle between shortened and full text display
+- [X] T193 **ENHANCEMENT**: Update Pull Requests tab - hide Status column and display Date with time (yyyy-MM-dd HH:mm)
+- [X] T194 **ENHANCEMENT**: Update Work Items tab - display Assigned Date with time (yyyy-MM-dd HH:mm)
+- [X] T195 **ENHANCEMENT**: Update all three tabs - align Actions column to right/top and remove column header
 
 ---
 
