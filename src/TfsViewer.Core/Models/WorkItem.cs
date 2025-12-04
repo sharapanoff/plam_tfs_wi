@@ -23,6 +23,8 @@ public class WorkItem
     
     public string IterationPath { get; set; } = string.Empty;
     
+    public string ProjectName { get; set; } = string.Empty;
+    
     public DateTime? CreatedDate { get; set; }
     
     public DateTime? ChangedDate { get; set; }

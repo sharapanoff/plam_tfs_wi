@@ -26,6 +26,9 @@ public partial class WorkItemViewModel : ObservableObject
     [ObservableProperty]
     private string _url = string.Empty;
 
+    [ObservableProperty]
+    private string _projectName = string.Empty;
+
     public string AssignedDateWithTime => AssignedDate?.ToString("yyyy-MM-dd HH:mm") ?? string.Empty;
 
     public static WorkItemViewModel FromModel(WorkItem model)
@@ -37,6 +40,7 @@ public partial class WorkItemViewModel : ObservableObject
             WorkItemType = model.WorkItemType,
             State = model.State,
             AssignedDate = model.AssignedDate ?? model.ChangedDate,
+            ProjectName = model.ProjectName,
             Url = model.Url
         };
     }

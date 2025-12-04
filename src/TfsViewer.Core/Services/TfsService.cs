@@ -184,6 +184,7 @@ public class TfsService : ITfsService, IDisposable
             { 
                 "System.Id", "System.Title", "System.WorkItemType", "System.State",
                 "System.AssignedTo", "System.CreatedDate", "System.ChangedDate",
+                "System.TeamProject"
                 //"System.Priority", "System.AreaPath", "System.IterationPath"
             };
 
@@ -202,6 +203,7 @@ public class TfsService : ITfsService, IDisposable
                 Priority = wi.Fields.ContainsKey("System.Priority") ? wi.Fields["System.Priority"]?.ToString() ?? string.Empty : string.Empty,
                 AreaPath = wi.Fields.ContainsKey("System.AreaPath") ? wi.Fields["System.AreaPath"]?.ToString() ?? string.Empty : string.Empty,
                 IterationPath = wi.Fields.ContainsKey("System.IterationPath") ? wi.Fields["System.IterationPath"]?.ToString() ?? string.Empty : string.Empty,
+                ProjectName = wi.Fields.ContainsKey("System.TeamProject") ? wi.Fields["System.TeamProject"]?.ToString() ?? string.Empty : string.Empty,
                 // Construct proper TFS web UI URL instead of using API URL
                 Url = $"{_constsTFS?.ServerUrl}/_workitems/edit/{wi.Id ?? 0}"
             }).ToList();

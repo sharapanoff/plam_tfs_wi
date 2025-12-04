@@ -163,6 +163,10 @@
                             <DataGridTextColumn Header="Assigned Date" 
                                                 Binding="{Binding AssignedDateWithTime}" 
                                                 Width="140"/>
+                            
+                            <DataGridTextColumn Header="PROJECT" 
+                                                Binding="{Binding ProjectName}" 
+                                                Width="120"/>
 
                             <DataGridTemplateColumn Width="200">
                                 <DataGridTemplateColumn.CellTemplate>
