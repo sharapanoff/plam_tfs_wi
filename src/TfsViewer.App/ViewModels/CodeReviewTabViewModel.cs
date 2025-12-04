@@ -87,8 +87,7 @@ public partial class CodeReviewTabViewModel : ObservableObject
         {
             try
             {
-                // Pass the review web URL as server context for launcher fallback
-                _launcherService.OpenCodeReviewInVisualStudio(cr.Id, cr.Url);
+                _launcherService.OpenCodeReviewInVisualStudio(cr);
             }
             catch (InvalidOperationException)
             {

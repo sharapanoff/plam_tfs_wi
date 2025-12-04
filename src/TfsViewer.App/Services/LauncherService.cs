@@ -100,6 +100,38 @@ public class LauncherService : ILauncherService
         }
     }
 
+    public void OpenWorkItemInVisualStudio(object? workItemViewModel)
+    {
+        try
+        {
+            var vsExePath = visualStudioConfiguration?.VsExePath;
+            var vsArgument = visualStudioConfiguration?.VsArgument;
+
+            if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
+            {
+                throw new InvalidOperationException("Visual Studio path is not configured or invalid");
+            }
+
+            var workItemUrl = "";
+            
+            // Resolve parameters in the VS argument if provided
+            var resolvedArgument = string.IsNullOrWhiteSpace(vsArgument) 
+                ? workItemUrl 
+                : ParameterResolver.ResolveParameters(vsArgument, workItemViewModel);
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = vsExePath,
+                Arguments = resolvedArgument,
+                UseShellExecute = false
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to open work item in Visual Studio: {ex.Message}", ex);
+        }
+    }
+
     public void OpenPullRequestInVisualStudio(int pullRequestId, string repositoryUrl)
     {
         try
@@ -119,6 +151,36 @@ public class LauncherService : ILauncherService
             {
                 FileName = vsExePath,
                 Arguments = arguments,
+                UseShellExecute = false
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to open pull request: {ex.Message}", ex);
+        }
+    }
+
+    public void OpenPullRequestInVisualStudio(object? pullRequestViewModel)
+    {
+        try
+        {
+            var vsExePath = visualStudioConfiguration?.VsExePath;
+            var vsArgument = visualStudioConfiguration?.VsArgument;
+
+            if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
+            {
+                throw new InvalidOperationException("Visual Studio path is not configured or invalid");
+            }
+
+            // Resolve parameters in the VS argument if provided
+            var resolvedArgument = string.IsNullOrWhiteSpace(vsArgument) 
+                ? string.Empty 
+                : ParameterResolver.ResolveParameters(vsArgument, pullRequestViewModel);
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = vsExePath,
+                Arguments = resolvedArgument,
                 UseShellExecute = false
             });
         }
@@ -150,6 +212,38 @@ public class LauncherService : ILauncherService
             {
                 FileName = vsExePath,
                 Arguments = arguments,
+                UseShellExecute = false
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to open code review: {ex.Message}", ex);
+        }
+    }
+
+    public void OpenCodeReviewInVisualStudio(object? codeReviewViewModel)
+    {
+        try
+        {
+            var vsExePath = visualStudioConfiguration?.VsExePath;
+            var vsArgument = visualStudioConfiguration?.VsArgument;
+
+            if (string.IsNullOrWhiteSpace(vsExePath) || !File.Exists(vsExePath))
+            {
+                throw new InvalidOperationException("Visual Studio path is not configured or invalid");
+            }
+
+            var reviewUrl = string.Empty;
+            
+            // Resolve parameters in the VS argument if provided
+            var resolvedArgument = string.IsNullOrWhiteSpace(vsArgument) 
+                ? reviewUrl 
+                : ParameterResolver.ResolveParameters(vsArgument, codeReviewViewModel);
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = vsExePath,
+                Arguments = resolvedArgument,
                 UseShellExecute = false
             });
         }

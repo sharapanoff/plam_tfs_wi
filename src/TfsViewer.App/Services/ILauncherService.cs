@@ -9,7 +9,13 @@ public interface ILauncherService
     
     void OpenWorkItemInVisualStudio(int workItemId, string serverUrl);
     
+    void OpenWorkItemInVisualStudio(object? workItemViewModel);
+    
     void OpenPullRequestInVisualStudio(int pullRequestId, string repositoryUrl);
     
+    void OpenPullRequestInVisualStudio(object? pullRequestViewModel);
+    
     void OpenCodeReviewInVisualStudio(int codeReviewId, string serverUrl);
+    
+    void OpenCodeReviewInVisualStudio(object? codeReviewViewModel);
 }

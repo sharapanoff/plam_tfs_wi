@@ -96,8 +96,7 @@ public partial class WorkItemsTabViewModel : ObservableObject
         {
             try
             {
-                var serverUrl = string.Empty; // Will get from connection later
-                _launcherService.OpenWorkItemInVisualStudio(workItem.Id, serverUrl);
+                _launcherService.OpenWorkItemInVisualStudio(workItem);
             }
             catch (InvalidOperationException)
             {

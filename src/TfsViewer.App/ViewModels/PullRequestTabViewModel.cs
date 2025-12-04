@@ -87,8 +87,7 @@ public partial class PullRequestTabViewModel : ObservableObject
         {
             try
             {
-                // Pass the PR web URL as repository context for launcher fallback
-                _launcherService.OpenPullRequestInVisualStudio(pr.Id, pr.Url);
+                _launcherService.OpenPullRequestInVisualStudio(pr);
             }
             catch (InvalidOperationException)
             {
