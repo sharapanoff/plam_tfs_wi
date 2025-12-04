@@ -17,6 +17,8 @@ public class PullRequest
     
     public string CreatedBy { get; set; } = string.Empty;
     
+    public string ProjectName { get; set; } = string.Empty;
+    
     public DateTime CreatedDate { get; set; }
     
     public string Status { get; set; } = string.Empty;

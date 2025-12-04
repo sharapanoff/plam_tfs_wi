@@ -260,8 +260,9 @@
                                     <Binding Path="Title"/>
                                 </DataGridTextColumn.Binding>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Author" Binding="{Binding Author}" Width="160"/>
+                            <DataGridTextColumn Header="Requester" Binding="{Binding Requester}" Width="160"/>
                             <DataGridTextColumn Header="Date" Binding="{Binding CreationDateWithTime}" Width="140"/>
+                            <DataGridTextColumn Header="PROJECT" Binding="{Binding ProjectName}" Width="120"/>
 
                             <DataGridTemplateColumn Width="200">
                                 <DataGridTemplateColumn.CellTemplate>

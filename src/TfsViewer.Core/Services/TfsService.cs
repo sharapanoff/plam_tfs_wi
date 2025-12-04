@@ -300,9 +300,10 @@ public class TfsService : ITfsService, IDisposable
                                 SourceBranch = pr.SourceRefName ?? string.Empty,
                                 TargetBranch = pr.TargetRefName ?? string.Empty,
                                 CreatedDate = pr.CreationDate,
-                            Status = pr.Status.ToString(),
-                            Url = prUrl,
-                            IsDraft = pr.IsDraft ?? false
+                                Status = pr.Status.ToString(),
+                                Url = prUrl,
+                                IsDraft = pr.IsDraft ?? false,
+                                ProjectName = projectName
                         });
                     }
                 }
