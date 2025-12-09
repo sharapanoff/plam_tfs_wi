@@ -13,6 +13,7 @@ public partial class PullRequestTabViewModel : ObservableObject
 {
     private readonly ITfsService _tfsService;
     private readonly ILauncherService _launcherService;
+    private readonly IErrorNotificationService _errorNotificationService;
     private readonly ILoggingService? _logging;
     private CancellationTokenSource? _loadCts;
 
@@ -30,10 +31,11 @@ public partial class PullRequestTabViewModel : ObservableObject
 
     public int PullRequestCount => PullRequests.Count;
 
-    public PullRequestTabViewModel(ITfsService tfsService, ILauncherService launcherService, ILoggingService? logging = null)
+    public PullRequestTabViewModel(ITfsService tfsService, ILauncherService launcherService, IErrorNotificationService errorNotificationService, ILoggingService? logging = null)
     {
         _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
         _launcherService = launcherService ?? throw new ArgumentNullException(nameof(launcherService));
+        _errorNotificationService = errorNotificationService ?? throw new ArgumentNullException(nameof(errorNotificationService));
         _logging = logging;
     }
 
@@ -61,7 +63,7 @@ public partial class PullRequestTabViewModel : ObservableObject
         {
             ErrorMessage = $"Failed to load pull requests: {ex.Message}";
             _logging?.LogError("Failed to load pull requests", ex);
-            MessageBox.Show(ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            _errorNotificationService.ShowError(ErrorMessage);
         }
         finally
         {
@@ -97,7 +99,7 @@ public partial class PullRequestTabViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to open in Visual Studio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _errorNotificationService.ShowError($"Failed to open in Visual Studio: {ex.Message}");
             }
         }
     }

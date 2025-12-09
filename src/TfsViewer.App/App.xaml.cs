@@ -41,6 +41,7 @@ public partial class App : Application
 		mainWindow.Show();
 
 		_ = mainViewModel.InitializeAsync();
+        _serviceProvider.GetRequiredService<IErrorNotificationService>().Create(mainViewModel);
 
 		ConfigureTrayIcon(mainWindow, mainViewModel);
 	}
@@ -103,6 +104,9 @@ public partial class App : Application
         services.AddSingleton<PullRequestTabViewModel>();
         services.AddSingleton<CodeReviewTabViewModel>();
         services.AddSingleton<MainViewModel>();
+
+        // Error notification service (uses MainViewModel)
+        services.AddSingleton<IErrorNotificationService, ErrorNotificationService>();
         
     }
 

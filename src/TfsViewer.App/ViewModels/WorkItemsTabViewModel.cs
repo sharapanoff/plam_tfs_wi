@@ -15,6 +15,7 @@ public partial class WorkItemsTabViewModel : ObservableObject
 {
     private readonly ITfsService _tfsService;
     private readonly ILauncherService _launcherService;
+    private readonly IErrorNotificationService _errorNotificationService;
     private CancellationTokenSource? _loadCts;
 
     [ObservableProperty]
@@ -31,10 +32,11 @@ public partial class WorkItemsTabViewModel : ObservableObject
 
     public int WorkItemCount => WorkItems.Count;
 
-    public WorkItemsTabViewModel(ITfsService tfsService, ILauncherService launcherService)
+    public WorkItemsTabViewModel(ITfsService tfsService, ILauncherService launcherService, IErrorNotificationService errorNotificationService)
     {
         _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
         _launcherService = launcherService ?? throw new ArgumentNullException(nameof(launcherService));
+        _errorNotificationService = errorNotificationService ?? throw new ArgumentNullException(nameof(errorNotificationService));
     }
 
     [RelayCommand]
@@ -62,7 +64,7 @@ public partial class WorkItemsTabViewModel : ObservableObject
         catch (Exception ex)
         {
             ErrorMessage = $"Failed to load work items: {ex.Message}";
-            MessageBox.Show(ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            _errorNotificationService.ShowError(ErrorMessage);
         }
         finally
         {
@@ -106,7 +108,7 @@ public partial class WorkItemsTabViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to open in Visual Studio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _errorNotificationService.ShowError($"Failed to open in Visual Studio: {ex.Message}");
             }
         }
     }

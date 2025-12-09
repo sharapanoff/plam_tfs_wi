@@ -13,6 +13,7 @@ public partial class CodeReviewTabViewModel : ObservableObject
 {
     private readonly ITfsService _tfsService;
     private readonly ILauncherService _launcherService;
+    private readonly IErrorNotificationService _errorNotificationService;
     private readonly ILoggingService? _logging;
     private CancellationTokenSource? _loadCts;
 
@@ -30,10 +31,11 @@ public partial class CodeReviewTabViewModel : ObservableObject
 
     public int CodeReviewCount => CodeReviews.Count;
 
-    public CodeReviewTabViewModel(ITfsService tfsService, ILauncherService launcherService, ILoggingService? logging = null)
+    public CodeReviewTabViewModel(ITfsService tfsService, ILauncherService launcherService, IErrorNotificationService errorNotificationService, ILoggingService? logging = null)
     {
         _tfsService = tfsService ?? throw new ArgumentNullException(nameof(tfsService));
         _launcherService = launcherService ?? throw new ArgumentNullException(nameof(launcherService));
+        _errorNotificationService = errorNotificationService ?? throw new ArgumentNullException(nameof(errorNotificationService));
         _logging = logging;
     }
 
@@ -61,7 +63,7 @@ public partial class CodeReviewTabViewModel : ObservableObject
         {
             ErrorMessage = $"Failed to load code reviews: {ex.Message}";
             _logging?.LogError("Failed to load code reviews", ex);
-            MessageBox.Show(ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            _errorNotificationService.ShowError(ErrorMessage);
         }
         finally
         {
@@ -97,7 +99,7 @@ public partial class CodeReviewTabViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to open in Visual Studio: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _errorNotificationService.ShowError($"Failed to open in Visual Studio: {ex.Message}");
             }
         }
     }
