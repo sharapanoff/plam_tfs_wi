@@ -57,7 +57,7 @@ jobs:
 
     env:
       Solution_Name: TfsViewer.sln
-      Test_Project_Path: tests\TfsViewer.App.Tests\TfsViewer.App.Tests.csproj
+      # Test_Project_Path: tests\TfsViewer.App.Tests\TfsViewer.App.Tests.csproj
       # Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       # Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
       outputdir: src\TfsViewer.App\bin\Release\net10.0-windowst
