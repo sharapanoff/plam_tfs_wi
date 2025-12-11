@@ -34,7 +34,7 @@
                        Visibility="{Binding ServerUrlError, Converter={StaticResource NullToVisibilityConverter}}"
                        Margin="0,0,0,10"/>
             
-            <TextBox materialDesign:HintAssist.Hint="Custom Browser Exe (optional)"
+            <TextBox materialDesign:HintAssist.Hint="Custom Browser Exe (optional - e.g., C:\\Program Files\\Mozilla Firefox\\firefox.exe)"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Text="{Binding BrowserExePath, UpdateSourceTrigger=PropertyChanged}"
                      Margin="0,0,0,10"/>
@@ -44,12 +44,12 @@
                      Text="{Binding BrowserArgument, UpdateSourceTrigger=PropertyChanged}"
                      Margin="0,0,0,10"/>
 
-            <TextBox materialDesign:HintAssist.Hint="Visual Studio Exe (optional)"
+            <TextBox materialDesign:HintAssist.Hint="Visual Studio Exe (optional - e.g., C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe)"
                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
                     Text="{Binding VsExePath, UpdateSourceTrigger=PropertyChanged}"
                     Margin="0,0,0,10"/>
 
-            <TextBox materialDesign:HintAssist.Hint="Visual Studio Argument (optional)"
+            <TextBox materialDesign:HintAssist.Hint="Visual Studio Argument (optional - e.g., -edit)"
                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
                     Text="{Binding VsArgument, UpdateSourceTrigger=PropertyChanged}"
                     Margin="0,0,0,10"/>
