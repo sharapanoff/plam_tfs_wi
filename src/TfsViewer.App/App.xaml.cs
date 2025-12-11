@@ -129,7 +129,7 @@ public partial class App : Application
         {
             g.Clear(Color.FromArgb(0x00, 0x7A, 0xCC)); // VS blue
             using var font = new Font(FontFamily.GenericSansSerif, 8, System.Drawing.FontStyle.Bold);
-            var text = "TV";
+            var text = "tfs";
             var size = g.MeasureString(text, font);
             g.DrawString(text, font, Brushes.White, (16 - size.Width) / 2, (16 - size.Height) / 2);
         }
